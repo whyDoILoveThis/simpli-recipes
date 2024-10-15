@@ -4,7 +4,7 @@ interface User {
     fullNameLower: MaybeString;  // For search functionality
     photoUrl: MaybeString;
     email: MaybeString;
-    recipes?: string[];  // Store recipe UIDs for scalability
+    recipes?: Recipe[];  // Store recipe UIDs for scalability
     friends?: string[];  // Array of friend UIDs
     friendRequests?: FriendRequest[];  // Clearer field for friend requests
     favoriteRecipes?: string[];  // Array of favorite recipe UIDs
