@@ -8,6 +8,8 @@ import {
   SignInButton,
   UserButton,
 } from "@clerk/nextjs";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ModeToggle } from "@/components/ModeToggle";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -32,15 +34,25 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
-        <body>
-          <SignedOut>
-            <SignInButton />
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
-          {children}
+      <html className="flex justify-center" lang="en">
+        <body className="max-w-[800px] w-[800px] flex flex-col">
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <SignedOut>
+              <SignInButton />
+            </SignedOut>
+            <SignedIn>
+              <nav className="flex justify-between items-center p-2 px-4 border-b bg-black bg-opacity-15 dark:bg-white dark:bg-opacity-15">
+                <UserButton />
+                <ModeToggle />
+              </nav>
+            </SignedIn>
+            {children}
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>
