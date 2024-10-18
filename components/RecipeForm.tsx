@@ -7,6 +7,10 @@ import { useDrag, useDrop, DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import Image from "next/image";
 import { fbUploadImage } from "@/firebase/fbUploadImage";
+import Minus from "./icons/Minus";
+import Plus from "./icons/Plus";
+import { Slider } from "@/components/ui/slider";
+import { convertTime } from "@/lib/utils";
 
 enum RecipeCategory {
   Breakfast = "breakfast",
@@ -83,7 +87,7 @@ const DraggableItem = ({
   return (
     <div
       ref={ref}
-      className="flex items-center gap-2 mb-1"
+      className="flex items-center gap-4 mb-1 border border-slate-700 rounded-3xl w-fit p-2"
       style={{ opacity: isDragging ? 0.5 : 1 }}
     >
       <span className="cursor-move">⋮⋮</span>
@@ -95,11 +99,11 @@ const DraggableItem = ({
         </span>
       )}
       <Button
+        className="p-2 w-[30px] h-[30px]"
         type="button"
-        variant="destructive"
         onClick={() => deleteItem(index)}
       >
-        ➖
+        <Minus />
       </Button>
     </div>
   );
@@ -224,6 +228,14 @@ export default function RecipeForm({
     setNewRecipeData(formData); // Set form data when recipeData changes
   }, [formData, setNewRecipeData]);
 
+  useEffect(() => {
+    setFormData({
+      ...formData,
+      totalTime:
+        (formData.totalTimeTemp && convertTime(formData.totalTimeTemp)) || "0",
+    });
+  }, [formData.totalTimeTemp]);
+
   return (
     <DndProvider backend={HTML5Backend}>
       <form onSubmit={handleSubmit} className={`${mode}-recipe-form`}>
@@ -291,14 +303,19 @@ export default function RecipeForm({
         </div>
 
         {/* Add Ingredient Input */}
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex justify-center items-center gap-2 mb-4">
           <Input
             placeholder="Add Ingredient"
             value={ingredientInput}
             onChange={(e) => setIngredientInput(e.target.value)}
           />
-          <Button type="button" onClick={addIngredient}>
-            ➕
+          <Button
+            type="button"
+            className={`text-xl p-1 w-[25px] h-[25px]
+        `}
+            onClick={addIngredient}
+          >
+            <Plus />
           </Button>
         </div>
 
@@ -328,9 +345,36 @@ export default function RecipeForm({
             value={stepInput}
             onChange={(e) => setStepInput(e.target.value)}
           />
-          <Button type="button" onClick={addStep}>
-            ➕
+          <Button
+            type="button"
+            className={`text-xl p-1 w-[25px] h-[25px] `}
+            onClick={addStep}
+          >
+            <Plus />
           </Button>
+        </div>
+
+        {/* Time Slider */}
+        <div className="flex flex-col gap-1">
+          <label htmlFor="timeSlider">
+            Total Time:{" "}
+            {recipeData.totalTimeTemp && convertTime(recipeData.totalTimeTemp)}
+          </label>
+          <Slider
+            id="timeSlider"
+            min={5}
+            max={500}
+            step={1}
+            defaultValue={
+              (formData.totalTimeTemp && [formData.totalTimeTemp]) || [0]
+            }
+            onValueChange={(value) =>
+              setFormData({
+                ...formData,
+                totalTimeTemp: value[0],
+              })
+            }
+          />
         </div>
 
         {/* Notes Section */}

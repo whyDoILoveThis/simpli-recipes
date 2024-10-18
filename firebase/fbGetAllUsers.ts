@@ -21,13 +21,17 @@ export const fbGetAllUsers = async (): Promise<User[]> => {
         fullNameLower: data.fullNameLower,
         email: data.email,
         photoUrl: data.photoUrl,
+        friendRequests: data.friendRequests || [],
+        sentFriendRequests: data.sentFriendRequests || [],
+        friends: data.friends|| []
+
       };
       users.push(user);
     });
 
     return users;
   } catch (error) {
-    console.error("Error fetching blogs:", error);
+    console.error("Error fetching users:", error);
     throw error; // Throw error for handling in the component
   }
 };

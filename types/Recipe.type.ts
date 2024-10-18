@@ -8,6 +8,8 @@ interface Recipe {
     category: RecipeCategory | 'other';  // Using enum for category
     steps: string[];  // List of steps for the recipe
     ingredients: string[];  // List of ingredients
+    totalTime: string;
+    totalTimeTemp: number;
     comments: string[];  // Store comment IDs for scalability
 }
 

@@ -26,6 +26,9 @@ export async function fbSaveUser({
       fullNameLower: fullName.toLowerCase(),
       email: email,
       photoUrl: photoUrl,
+      friendRequests: [],
+      sentFriendRequests: [],
+      friends: []
     });
     console.log("Blog created successfully!");
   } catch (error) {

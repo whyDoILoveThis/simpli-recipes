@@ -35,7 +35,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html className="flex justify-center" lang="en">
-        <body className="max-w-[800px] w-[800px] flex flex-col">
+        <body className="max-w-[800px] w-[800px] mt-14 flex flex-col">
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -46,7 +46,7 @@ export default function RootLayout({
               <SignInButton />
             </SignedOut>
             <SignedIn>
-              <nav className="flex justify-between items-center p-2 px-4 border-b bg-black bg-opacity-15 dark:bg-white dark:bg-opacity-15">
+              <nav className=" z-[1] fixed top-0 w-full max-w-[800px] backdrop-blur-lg flex justify-between items-center p-2 px-4 border-b bg-black bg-opacity-15 dark:bg-white dark:bg-opacity-15">
                 <UserButton />
                 <ModeToggle />
               </nav>

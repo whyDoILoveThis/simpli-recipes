@@ -1,27 +1,66 @@
-import React from "react";
+"use client";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { useUserData } from "@/hooks/useUserData";
+import Friends from "../icons/Friends";
+import { Button } from "./button";
+import Heart from "../icons/Heart";
+import Document from "../icons/Document";
+import { useUserFriendsStore } from "@/hooks/useUserFriendsStore";
 
-const UserProfileCard = () => {
+interface Props {
+  setShowMyRecipes: (param: boolean) => void;
+  setShowMyFriends: (param: boolean) => void;
+}
+const UserProfileCard = ({ setShowMyRecipes, setShowMyFriends }: Props) => {
   const { dbUser, loadingUser, isSavingUser } = useUserData();
+  const { friends, fetchUserFriends } = useUserFriendsStore();
+
+  useEffect(() => {
+    dbUser?.userId && fetchUserFriends(dbUser.userId);
+  }, [dbUser]);
 
   if (!dbUser) return;
 
   return (
-    <div>
+    <div className="flex flex-col gap-3 w-fit border border-slate-700 rounded-3xl m-4 p-4">
       {/* User is found, you can display their info here */}
-      <p>Welcome, {dbUser.fullName || "User"}!</p>
-      {dbUser.photoUrl && (
-        <Image
-          src={dbUser.photoUrl}
-          alt="User Photo"
-          width={100}
-          height={100}
-        />
-      )}
-      <p>Creations: {dbUser.recipes?.length || "0"}</p>
-      <p>Friends: {dbUser.friends?.length || "0"}</p>
-      <p>Favorites: {dbUser.favoriteRecipes?.length || "0"}</p>
+      <div className="flex gap-1 border rounded-full w-fit p-2 items-center">
+        {dbUser.photoUrl && (
+          <Image
+            className="rounded-full"
+            src={dbUser.photoUrl}
+            alt="User Photo"
+            width={25}
+            height={25}
+          />
+        )}
+        <p>{dbUser?.fullName}</p>
+      </div>
+      <div className="flex gap-2 w-fit">
+        <Button
+          onClick={() => {
+            setShowMyRecipes(true);
+            setShowMyFriends(false);
+          }}
+          className="flex gap-1 items-center"
+        >
+          <Document /> {dbUser.recipes?.length || "0"}
+        </Button>
+        <Button
+          onClick={() => {
+            setShowMyFriends(true);
+            setShowMyRecipes(false);
+          }}
+          className="flex gap-1 items-center"
+        >
+          <Friends />
+          {friends?.length || "0"}
+        </Button>
+        <Button className="flex gap-1 items-center">
+          <Heart /> {dbUser.favoriteRecipes?.length || "0"}
+        </Button>
+      </div>
     </div>
   );
 };

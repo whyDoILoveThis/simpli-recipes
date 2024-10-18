@@ -12,48 +12,54 @@ export const useUserData = () => {
   const [loadingUser, setLoadingUser] = useState(true);
   const [isSavingUser, setIsSavingUser] = useState(false);
 
-  // Function for fetching and saving user data
+  // Fetch user data function (made reusable for refetch)
+  const getUser = async () => {
+    if (!userId) {
+      setLoadingUser(false);
+      return;
+    }
+
+    try {
+      setLoadingUser(true);
+      const fetchedUser = await fbGetUserById(userId); // Fetch user
+
+      if (fetchedUser) {
+        setDbUser(fetchedUser); // Set user if found
+      } else {
+        setIsSavingUser(true); // Start saving user process
+
+        await fbSaveUser({
+          userId,
+          fullName: user?.fullName || null,
+          email: user?.emailAddresses[0]?.emailAddress || null,
+          photoUrl: user?.imageUrl || null,
+        });
+
+        const newUser = await fbGetUserById(userId); // Re-fetch after saving
+        setDbUser(newUser); // Update state with new user
+        setIsSavingUser(false); // Stop saving process
+      }
+    } catch (error) {
+      console.error("Error fetching or saving user:", error);
+    } finally {
+      setLoadingUser(false);
+    }
+  };
+
+  // Initial fetch on mount
   useEffect(() => {
-    const getUser = async () => {
-      if (!userId) {
-        setLoadingUser(false); // Stop loading if no userId
-        return;
-      }
-
-      try {
-        setLoadingUser(true); // Start loading
-
-        const fetchedUser = await fbGetUserById(userId); // Fetch user
-
-        if (fetchedUser) {
-          setDbUser(fetchedUser); // Set user if found
-        } else {
-          setIsSavingUser(true); // Start saving user process
-
-          await fbSaveUser({
-            userId,
-            fullName: user?.fullName || null,
-            email: user?.emailAddresses[0]?.emailAddress || null,
-            photoUrl: user?.imageUrl || null,
-          });
-
-          const newUser = await fbGetUserById(userId); // Re-fetch after saving
-          setDbUser(newUser); // Update state with new user
-          setIsSavingUser(false); // Stop saving process
-        }
-      } catch (error) {
-        console.error("Error fetching or saving user:", error);
-      } finally {
-        setLoadingUser(false); // Stop loading when done
-      }
-    };
-
-    getUser(); // Call the function inside useEffect
+    getUser();
   }, [userId, user]);
 
+  // Handle userId becoming null
   useEffect(() => {
-    !userId && setDbUser(null);
+    if (!userId) setDbUser(null);
   }, [userId]);
 
-  return { dbUser, loadingUser, isSavingUser }; // Return relevant states
+  // Expose the refetchUser function
+  const refetchUser = async () => {
+    await getUser();
+  };
+
+  return { dbUser, loadingUser, isSavingUser, refetchUser }; // Added refetchUser to the return object
 };
