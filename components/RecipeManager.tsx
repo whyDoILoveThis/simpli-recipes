@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useUserData } from "@/hooks/useUserData"; // Assuming this hook provides dbUser
+import { useUserStore } from "@/hooks/useUserStore"; // Assuming this hook provides dbUser
 import { fbAddRecipe } from "@/firebase/fbAddRecipe";
 import { fbDeleteRecipe } from "@/firebase/fbDeleteRecipe";
 import { fbUpdateRecipe } from "@/firebase/fbUpdateRecipe";
@@ -25,10 +25,15 @@ import Dinner from "./icons/category icons/Dinner";
 import Dessert from "./icons/category icons/Dessert";
 import Snack from "./icons/category icons/Snack";
 import Beverage from "./icons/category icons/Beverage";
+import { uuid } from "uuidv4";
+import { useAuth } from "@clerk/nextjs";
+import { fbGetUsersRecipes } from "@/firebase/fbGetUsersRecipes";
+import { useRecipeStore } from "@/hooks/userRecipeStore";
 
 export default function RecipeManager() {
-  const { dbUser } = useUserData();
-  const [recipes, setRecipes] = useState<Recipe[]>([]); // Local state for recipes
+  const { dbUser, refetchUser } = useUserStore();
+  const { userId } = useAuth();
+  const { recipes, setRecipes } = useRecipeStore(); // Local state for recipes
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [editing, setEditing] = useState(false);
   const [newRecipeData, setNewRecipeData] = useState<Partial<Recipe>>({});
@@ -38,21 +43,27 @@ export default function RecipeManager() {
 
   useEffect(() => {
     if (dbUser?.recipes) {
-      setRecipes(dbUser.recipes); // Initialize local recipes state
+      const getRecipes = async () => {
+        dbUser.recipes && setRecipes(await fbGetUsersRecipes(dbUser.recipes)); // Initialize local recipes state}
+      };
+
+      getRecipes();
     }
   }, [dbUser]);
 
   // 🛠️ Ensure no empty submission
   const handleAddRecipe = async (e: React.FormEvent) => {
+    console.log(dbUser);
     e.preventDefault();
     if (!newRecipeData.title || newRecipeData.title.trim() === "") {
       alert("Please provide a recipe title."); // Simple validation
       return;
     }
 
-    if (dbUser?.userId) {
+    if (dbUser?.userId && userId) {
       const newRecipe: Recipe = {
-        uid: generateUniqueId(), // Create a unique ID for the new recipe
+        uid: uuid(), // Create a unique ID for the new recipe
+        creatorUid: userId,
         title: newRecipeData.title || "",
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -68,9 +79,10 @@ export default function RecipeManager() {
 
       await fbAddRecipe(dbUser.userId, newRecipe);
 
-      setRecipes((prevRecipes) => [...prevRecipes, newRecipe]); // Update local state
+      setRecipes([...recipes, newRecipe]); // Update local state
       setAdding(false);
       setNewRecipeData({}); // Reset form after successful add
+      refetchUser();
     }
   };
 
@@ -86,9 +98,8 @@ export default function RecipeManager() {
     );
     if (confirmed && dbUser?.userId) {
       await fbDeleteRecipe(dbUser.userId, recipeId);
-      setRecipes((prevRecipes) =>
-        prevRecipes.filter((recipe) => recipe.uid !== recipeId)
-      );
+      setRecipes(recipes.filter((recipe) => recipe.uid !== recipeId));
+      refetchUser();
     }
   };
 
@@ -108,8 +119,8 @@ export default function RecipeManager() {
       };
 
       await fbUpdateRecipe(dbUser.userId, updatedRecipe);
-      setRecipes((prevRecipes) =>
-        prevRecipes.map((recipe) =>
+      setRecipes(
+        recipes.map((recipe) =>
           recipe.uid === selectedRecipe.uid ? updatedRecipe : recipe
         )
       );
@@ -117,11 +128,8 @@ export default function RecipeManager() {
       setEditing(false);
       setSelectedRecipe(null);
       setNewRecipeData({}); // Clear form after successful update
+      refetchUser();
     }
-  };
-
-  const generateUniqueId = () => {
-    return "recipe_" + Math.random().toString(36).substr(2, 9);
   };
 
   return (

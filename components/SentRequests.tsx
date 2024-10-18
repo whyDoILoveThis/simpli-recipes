@@ -7,7 +7,7 @@ import {
 } from "@/firebase/fbManageFriendRequest";
 import { useFriendRequests } from "@/hooks/useFriendRequests";
 import { useSentRequests } from "@/hooks/useSentRequests";
-import { useUserData } from "@/hooks/useUserData";
+import { useUserStore } from "@/hooks/useUserStore";
 import { useAuth } from "@clerk/nextjs";
 import React, { useEffect, useState } from "react";
 import {
@@ -24,7 +24,7 @@ const SentRequests = () => {
   const { sentFriendRequests, loadingRequests, refetchFriendRequests } =
     useFriendRequests();
   const { userId } = useAuth();
-  const { refetchUser } = useUserData();
+  const { refetchUser } = useUserStore();
   const [users, setUsers] = useState<{ [key: string]: User | null }>({});
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [localRequests, setLocalRequests] = useState(sentFriendRequests || []); // Track requests locally

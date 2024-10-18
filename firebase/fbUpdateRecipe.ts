@@ -1,24 +1,24 @@
-import { doc, updateDoc, arrayRemove, arrayUnion } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig"; // Firestore db instance
 import { fbGetUserById } from "./fbGetUserById";
 
 export const fbUpdateRecipe = async (userId: string, updatedRecipe: Recipe) => {
   try {
+    if(!updatedRecipe.uid) {return}
+    // Reference to the specific recipe document in the recipes collection
+    const recipeRef = doc(db, "recipes", updatedRecipe.uid);
     const userRef = doc(db, "users", userId);
 
-    // First, remove the old recipe
+    // Check if the recipe exists in the user's recipe list
     const user = await fbGetUserById(userId);
-    const oldRecipe = user?.recipes?.find((r) => r.uid === updatedRecipe.uid);
+    const recipeExists =  user?.recipes?.includes(updatedRecipe.uid);
 
-    if (!oldRecipe) throw new Error("Recipe not found");
+    if (!recipeExists) throw new Error("Recipe not found in user's list");
 
-    await updateDoc(userRef, {
-      recipes: arrayRemove(oldRecipe), // Remove the old recipe
-    });
-
-    // Then, add the updated recipe
-    await updateDoc(userRef, {
-      recipes: arrayUnion(updatedRecipe), // Add the updated recipe back
+    // Update the recipe document in the `recipes` collection
+    await updateDoc(recipeRef, {
+      ...updatedRecipe,  // Update the recipe with new values
+      updatedAt: new Date(),  // Set an updated timestamp if needed
     });
 
     console.log("Recipe updated successfully!");

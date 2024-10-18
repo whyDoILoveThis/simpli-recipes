@@ -12,12 +12,12 @@ import { Button } from "./ui/button";
 import { fbRemoveFriend } from "@/firebase/fbRemoveFriend"; // Assuming you have a function to remove a friend
 import { useAuth } from "@clerk/nextjs";
 import { useUserFriendsStore } from "@/hooks/useUserFriendsStore";
-import { useUserData } from "@/hooks/useUserData";
+import { useUserStore } from "@/hooks/useUserStore";
 
 const MyFriends = () => {
   const { userId } = useAuth(); // Get current user ID
   const { friends, loadingFriends, fetchUserFriends } = useUserFriendsStore(); // Hook to fetch user friends
-  const { refetchUser } = useUserData(); // Assuming you have a refetch function for user data
+  const { refetchUser } = useUserStore(); // Assuming you have a refetch function for user data
   const [localFriends, setLocalFriends] = useState(friends || []); // Local state for friends
 
   // Update local friends when the hook returns updated data

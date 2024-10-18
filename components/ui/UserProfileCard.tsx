@@ -1,20 +1,22 @@
 "use client";
 import React, { useEffect } from "react";
 import Image from "next/image";
-import { useUserData } from "@/hooks/useUserData";
+import { useUserStore } from "@/hooks/useUserStore";
 import Friends from "../icons/Friends";
 import { Button } from "./button";
 import Heart from "../icons/Heart";
 import Document from "../icons/Document";
 import { useUserFriendsStore } from "@/hooks/useUserFriendsStore";
+import { useRecipeStore } from "@/hooks/userRecipeStore";
 
 interface Props {
   setShowMyRecipes: (param: boolean) => void;
   setShowMyFriends: (param: boolean) => void;
 }
 const UserProfileCard = ({ setShowMyRecipes, setShowMyFriends }: Props) => {
-  const { dbUser, loadingUser, isSavingUser } = useUserData();
+  const { dbUser, loadingUser, isSavingUser } = useUserStore();
   const { friends, fetchUserFriends } = useUserFriendsStore();
+  const { recipes } = useRecipeStore();
 
   useEffect(() => {
     dbUser?.userId && fetchUserFriends(dbUser.userId);
@@ -45,7 +47,7 @@ const UserProfileCard = ({ setShowMyRecipes, setShowMyFriends }: Props) => {
           }}
           className="flex gap-1 items-center"
         >
-          <Document /> {dbUser.recipes?.length || "0"}
+          <Document /> {recipes?.length || "0"}
         </Button>
         <Button
           onClick={() => {

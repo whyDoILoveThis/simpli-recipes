@@ -6,13 +6,13 @@ import AddUserButton from "./icons/AddUserButton";
 import ProfileButton from "./icons/ProfileButton";
 import { fbSendFriendRequest } from "@/firebase/fbManageFriendRequest";
 import { useAuth } from "@clerk/clerk-react";
-import { useUserData } from "@/hooks/useUserData";
+import { useUserStore } from "@/hooks/useUserStore";
 import { useSentRequests } from "@/hooks/useSentRequests";
 import { useFriendRequests } from "@/hooks/useFriendRequests";
 
 const AllUsers = () => {
   const { allUsers, fetchAllUsers } = useAllUsersStore();
-  const { refetchUser } = useUserData();
+  const { refetchUser } = useUserStore();
   const [selectedUserIndex, setSelectedUserIndex] = useState(-999);
   const { userId } = useAuth();
   const [sentRequests, setSentRequests] = useState<string[]>([]); // State to track sent requests

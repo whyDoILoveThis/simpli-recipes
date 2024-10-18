@@ -17,7 +17,7 @@ import {
   fbRejectFriendRequest,
 } from "@/firebase/fbManageFriendRequest"; // Assuming you have a function to reject
 import { useAuth } from "@clerk/nextjs";
-import { useUserData } from "@/hooks/useUserData";
+import { useUserStore } from "@/hooks/useUserStore";
 import FriendRequests from "./FriendRequests";
 import SentRequests from "./SentRequests";
 import { useUserFriendsStore } from "@/hooks/useUserFriendsStore";
@@ -27,7 +27,7 @@ import { useUserFriendsStore } from "@/hooks/useUserFriendsStore";
 
 const MyRequests = () => {
   const { userId } = useAuth();
-  const { refetchUser } = useUserData();
+  const { refetchUser } = useUserStore();
   const { friends, fetchUserFriends } = useUserFriendsStore();
   const { friendRequests, loadingRequests, refetchFriendRequests } =
     useFriendRequests(); // Assuming you have a way to refetch requests
