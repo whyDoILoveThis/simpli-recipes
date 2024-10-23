@@ -13,6 +13,7 @@ import { fbRemoveFriend } from "@/firebase/fbRemoveFriend"; // Assuming you have
 import { useAuth } from "@clerk/nextjs";
 import { useUserFriendsStore } from "@/hooks/useUserFriendsStore";
 import { useUserStore } from "@/hooks/useUserStore";
+import MyDropdownTrigger from "./ui/MyDropdownTrigger";
 
 const MyFriends = () => {
   const { userId } = useAuth(); // Get current user ID
@@ -58,11 +59,7 @@ const MyFriends = () => {
             className="relative flex items-center gap-4 border rounded-3xl p-3 m-2"
           >
             <DropdownMenu>
-              <DropdownMenuTrigger className="focus:outline-none">
-                <Button className="w-[30px] h-[30px] p-0">
-                  <BsThreeDots className="text-slate-400" />
-                </Button>
-              </DropdownMenuTrigger>
+              <MyDropdownTrigger />
               <DropdownMenuContent className="flex flex-col gap-1">
                 <DropdownMenuItem
                   onClick={() =>

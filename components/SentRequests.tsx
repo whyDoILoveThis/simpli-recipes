@@ -19,6 +19,9 @@ import {
 import { Button } from "./ui/button";
 import { BsThreeDots } from "react-icons/bs";
 import RequestStatus from "./ui/RequestStatus";
+import MyDropdownTrigger from "./ui/MyDropdownTrigger";
+import DateAndTime from "./ui/DateAndTime";
+import RequestCard from "./ui/RequestCard";
 
 const SentRequests = () => {
   const { sentFriendRequests, loadingRequests, refetchFriendRequests } =
@@ -123,64 +126,14 @@ const SentRequests = () => {
         localRequests.map((request, index) => {
           const user = users[request.userUid];
           return (
-            <div
-              key={index}
-              className=" relative flex flex-col items-center gap-2 border rounded-3xl p-3 m-2"
-            >
-              <div className="flex gap-2">
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="focus:outline-none">
-                    <Button className="w-[30px] h-[30px] p-0">
-                      <BsThreeDots className="text-slate-400" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="flex flex-col gap-1">
-                    {request.status === "pending" ? (
-                      <DropdownMenuItem
-                        onClick={() =>
-                          handleStop(request.userUid, request.status)
-                        }
-                        className="bg-red-600 bg-opacity-30 border border-red-500 border-opacity-60 text-red-200 dark:hover:bg-red-900"
-                      >
-                        Stop Request
-                      </DropdownMenuItem>
-                    ) : (
-                      <DropdownMenuItem
-                        onClick={() =>
-                          handleDelete(request.userUid, request.status)
-                        }
-                        className="bg-red-600 bg-opacity-30 border border-red-500 border-opacity-60 text-red-200 dark:hover:bg-red-900"
-                      >
-                        DELETE
-                      </DropdownMenuItem>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                {user?.photoUrl && (
-                  <img
-                    src={user.photoUrl || undefined} // Handle undefined photoUrl
-                    alt={`${user.fullName || "User"}'s profile`} // Handle undefined fullName
-                    className="h-12 w-12 rounded-full object-cover"
-                  />
-                )}
-                <div>
-                  <p>{user?.fullName || "Unknown User"}</p>{" "}
-                  {/* Handle undefined fullName */}
-                  <RequestStatus status={request.status} />
-                </div>
-              </div>
-              <p className="text-sm text-slate-400">
-                {request.sentAt.toDate().toLocaleString("en-US", {
-                  weekday: "short",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour: "numeric",
-                  minute: "numeric",
-                  hour12: true,
-                })}
-              </p>
-            </div>
+            <RequestCard
+              index={index}
+              uid={request.userUid}
+              request={request}
+              handleStop={handleStop}
+              handleDelete={handleDelete}
+              user={user}
+            />
           );
         })
       ) : (

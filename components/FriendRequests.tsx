@@ -8,6 +8,9 @@ import {
 import { Button } from "./ui/button";
 import { BsThreeDots } from "react-icons/bs";
 import RequestStatus from "./ui/RequestStatus";
+import MyDropdownTrigger from "./ui/MyDropdownTrigger";
+import DateAndTime from "./ui/DateAndTime";
+import RequestCard from "./ui/RequestCard";
 
 interface Props {
   localRequests: FriendRequest[];
@@ -30,60 +33,15 @@ const FriendRequests = ({
         localRequests.map((request, index) => {
           const user = users[request.requesterId];
           return (
-            <div
-              key={index}
-              className=" relative flex items-center gap-4 border rounded-3xl p-3 m-2"
-            >
-              <DropdownMenu>
-                <DropdownMenuTrigger className="focus:outline-none">
-                  <Button className="w-[30px] h-[30px] p-0">
-                    <BsThreeDots className="text-slate-400" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="flex flex-col gap-1">
-                  {request.status === "pending" ? (
-                    <div className="flex flex-col gap-1">
-                      <DropdownMenuItem
-                        onClick={() => handleAccept(request.requesterId)}
-                        className="bg-green-600 bg-opacity-30 border border-green-500 border-opacity-60 text-green-200 dark:hover:bg-green-900"
-                      >
-                        Accept
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleReject(request.requesterId)}
-                        className="bg-red-600 bg-opacity-30 border border-red-500 border-opacity-60 text-red-200 dark:hover:bg-red-900"
-                      >
-                        Reject
-                      </DropdownMenuItem>
-                    </div>
-                  ) : (
-                    <DropdownMenuItem
-                      onClick={() =>
-                        handleDelete(request.requesterId, request.status)
-                      }
-                      className="bg-red-600 bg-opacity-30 border border-red-500 border-opacity-60 text-red-200 dark:hover:bg-red-900"
-                    >
-                      DELETE
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {user?.photoUrl ? (
-                <img
-                  src={user.photoUrl || undefined} // Handle undefined photoUrl
-                  alt={`${user.fullName || "User"}'s profile`} // Handle undefined fullName
-                  className="h-12 w-12 rounded-full object-cover"
-                />
-              ) : (
-                <div className="h-12 w-12 rounded-full bg-gray-300"></div> // Placeholder if no photo
-              )}
-              <div>
-                <p>{user?.fullName || "Unknown User"}</p>{" "}
-                {/* Handle undefined fullName */}
-                <RequestStatus status={request.status} />
-              </div>
-            </div>
+            <RequestCard
+              index={index}
+              uid={request.requesterId}
+              handleAccept={handleAccept}
+              handleReject={handleReject}
+              handleDelete={handleDelete}
+              request={request}
+              user={user}
+            />
           );
         })
       ) : (
