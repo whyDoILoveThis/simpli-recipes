@@ -1,7 +1,7 @@
 import { IoDocumentText } from "react-icons/io5";
 import React from "react";
 
-const Document = () => {
+const DocumentIcon = () => {
   return (
     <div>
       <IoDocumentText />
@@ -9,4 +9,4 @@ const Document = () => {
   );
 };
 
-export default Document;
+export default DocumentIcon;

@@ -16,6 +16,7 @@ interface Recipe {
     totalTime: string;
     totalTimeTemp: number;
     comments: string[];  // Store comment IDs for scalability
+    timesFavorited?: number;
 }
 
 enum RecipeCategory {

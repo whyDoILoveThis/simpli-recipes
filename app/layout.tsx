@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import "@/styles/Clerk.css";
+import logo from "@/images/recipes-logo.png";
 import {
   ClerkProvider,
   SignedIn,
@@ -10,6 +12,9 @@ import {
 } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/ModeToggle";
+import Link from "next/link";
+import Image from "next/image";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -46,10 +51,31 @@ export default function RootLayout({
               <SignInButton />
             </SignedOut>
             <SignedIn>
-              <nav className=" z-[1] fixed top-0 w-full max-w-[800px] backdrop-blur-lg flex justify-between items-center p-2 px-4 border-b bg-black bg-opacity-15 dark:bg-white dark:bg-opacity-15">
-                <UserButton />
-                <ModeToggle />
+              <nav className=" z-[1] fixed top-0 left-0 w-full backdrop-blur-lg flex justify-center items-center p-2 px-4 border-b bg-black bg-opacity-15 dark:bg-white dark:bg-opacity-15">
+                <div className="w-full max-w-[800px] flex items-center justify-between">
+                  <Link href={"/feed"}>
+                    <Image width={50} height={10} src={logo} alt={"logo"} />
+                  </Link>
+                  <div className="flex items-center gap-6">
+                    <ul className="flex gap-3 ">
+                      <li className="text-slate-400 hover:text-white">
+                        <Link href={"/"}>Profile</Link>
+                      </li>
+                      <li className="text-slate-400 hover:text-white">
+                        <Link href={"/feed"}>Feed</Link>
+                      </li>
+                      <li className="text-slate-400 hover:text-white">
+                        <Link href={"/create"}>Create</Link>
+                      </li>
+                    </ul>
+                    <div className="flex gap-2">
+                      <UserButton />
+                      <ModeToggle />
+                    </div>
+                  </div>
+                </div>
               </nav>
+              <Toaster />
             </SignedIn>
             {children}
           </ThemeProvider>

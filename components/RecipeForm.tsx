@@ -30,7 +30,7 @@ interface RecipeFormProps {
     e: React.FormEvent<HTMLFormElement>,
     formData: Recipe | Partial<Recipe>
   ) => void; // Submit handler
-  onCancel: () => void; // Cancel handler
+  onCancel?: () => void; // Cancel handler
 }
 
 interface DraggableItemProps {
@@ -148,6 +148,8 @@ export default function RecipeForm({
 
   useEffect(() => {
     const uploadAndGetUrl = async () => {
+      console.log("ulpading image");
+
       if (!image) return;
       const tempImageUrl = await fbUploadImage(image);
       setFormData({
@@ -238,7 +240,7 @@ export default function RecipeForm({
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <form onSubmit={handleSubmit} className={`${mode}-recipe-form`}>
+      <form onSubmit={handleSubmit} className={`${mode}-recipe-form p-4 `}>
         <h3 className="text-lg font-bold mb-4">
           {mode === "add" ? "Add Recipe" : "Edit Recipe"}
         </h3>
@@ -390,9 +392,11 @@ export default function RecipeForm({
           <Button type="submit">
             {mode === "add" ? "Add Recipe" : "Update Recipe"}
           </Button>
-          <Button type="button" variant="destructive" onClick={onCancel}>
-            Cancel
-          </Button>
+          {onCancel && (
+            <Button type="button" variant="destructive" onClick={onCancel}>
+              Cancel
+            </Button>
+          )}
         </div>
       </form>
     </DndProvider>

@@ -7,6 +7,7 @@ import UserProfileCard from "@/components/ui/UserProfileCard";
 import Community from "@/components/Community";
 import { useAuth, useUser } from "@clerk/nextjs";
 import UserProfileCardSkeleton from "@/components/ui/UserProfileCardSkeleton";
+import MyFavorites from "@/components/MyFavorites";
 
 export default function Home() {
   const { user } = useUser();
@@ -14,6 +15,7 @@ export default function Home() {
   const { dbUser, loadingUser, isSavingUser, fetchUser } = useUserStore();
   const [showMyRecipes, setShowMyRecipes] = useState(true);
   const [showMyFriends, setShowMyFriends] = useState(false);
+  const [showMyFavorites, setShowMyFavorites] = useState(false);
 
   useEffect(() => {
     userId && user && fetchUser(userId, user);
@@ -33,17 +35,27 @@ export default function Home() {
             <UserProfileCard
               setShowMyRecipes={setShowMyRecipes}
               setShowMyFriends={setShowMyFriends}
+              setShowMyFavorites={setShowMyFavorites}
             />
           </div>
         )
       )}
 
-      {!loadingUser && dbUser && !showMyFriends && showMyRecipes && (
-        <RecipeManager />
-      )}
-      {!loadingUser && dbUser && !showMyRecipes && showMyFriends && (
-        <Community />
-      )}
+      {!loadingUser &&
+        dbUser &&
+        !showMyFriends &&
+        showMyRecipes &&
+        !showMyFavorites && <RecipeManager />}
+      {!loadingUser &&
+        dbUser &&
+        !showMyRecipes &&
+        showMyFriends &&
+        !showMyFavorites && <Community />}
+      {!loadingUser &&
+        dbUser &&
+        !showMyRecipes &&
+        !showMyFriends &&
+        showMyFavorites && <MyFavorites />}
     </div>
   );
 }

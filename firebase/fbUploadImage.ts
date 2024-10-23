@@ -1,13 +1,13 @@
 // firebaseStorage.ts
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "@/firebase/firebaseConfig"; // Your Firebase configuration
-import { v4 as uuidv4 } from "uuid";
+import { v4 } from "uuid";
 
 
 export const fbUploadImage = async (image: File): Promise<string> => {
   try {
     // Generate unique filename for the image
-    const imageName = `${uuidv4()}-${image.name}`;
+    const imageName = `${v4()}-${image.name}`;
 
     // Create a reference to the storage path
     const storageRef = ref(storage, `images/${imageName}`);
