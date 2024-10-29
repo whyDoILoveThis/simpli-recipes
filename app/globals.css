@@ -92,6 +92,38 @@ body *::-webkit-scrollbar-thumb
 }
 
 
+
+
+
+
+
+
+
+
+
+.no-scrollbar::-webkit-scrollbar-track, .no-scrollbar *::-webkit-scrollbar-track
+{
+  width: 0px;
+  height: 0px;
+	
+}
+
+.no-scrollbar::-webkit-scrollbar, .no-scrollbar *::-webkit-scrollbar
+{
+
+	width: 0px;
+  height: 0px;
+	background-color: #000000;
+}
+
+.no-scrollbar::-webkit-scrollbar-thumb,
+.no-scrollbar *::-webkit-scrollbar-thumb
+{
+width: 0px;
+height: 0px;
+}
+
+
 @layer base {
   * {
     @apply border-border;
@@ -104,4 +136,95 @@ body *::-webkit-scrollbar-thumb
 h2 {
   @apply
   text-3xl  
+}
+
+
+.tooltip {
+  position: relative;
+  cursor: pointer;
+}
+
+.tooltiptext {
+  visibility: hidden;
+  width: fit-content;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid rgba(131, 162, 207, 0.493);
+  
+
+  /* Positioning */
+  position: absolute;
+  bottom: 100%;
+  
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.3s;
+
+  
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+
+.btn-round {
+  @apply
+  w-[35px]
+  h-[35px]
+}
+
+/* CSS for smooth scale transition */
+.dropdown-container {
+  overflow: hidden;
+  transform-origin: top;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  transform: scaleY(0);
+  opacity: 0;
+}
+
+.dropdown-container.open {
+  transform: scaleY(1);
+  opacity: 1;
+}
+
+
+
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.15); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); }
+  20%, 40%, 60%, 80% { transform: translateX(3px); }
+}
+
+.pop-shake {
+  animation: pop 0.4s ease-in-out, shake 0.6s ease-in-out 0.4s;
+}
+
+
+/* HTML: <div class="loader"></div> */
+.loader-spinner {
+  width: 15px;
+  height: 15px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: 
+    radial-gradient(farthest-side,#b7b7b7 94%,#0000) top/2px 2px no-repeat,
+    conic-gradient(#0000 30%,#adadad);
+  -webkit-mask: radial-gradient(farthest-side,#0000 calc(100% - 2px),#000 0);
+  animation: l13 1s infinite linear;
+}
+@keyframes l13{ 
+  100%{transform: rotate(1turn)}
 }

@@ -64,7 +64,7 @@ const RecipeCardList = ({
             <Popover zIndex="59">
               <div className="flex flex-col items-center gap-2 absolute right-2 top-4">
                 <button
-                  className="text-3xl"
+                  className="text-3xl z-[60]"
                   onClick={() => {
                     setSelectedRecipeIndex(-999);
                     setViewingRecipe(false);

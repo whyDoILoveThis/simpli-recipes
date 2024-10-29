@@ -16,6 +16,7 @@ interface Props {
   index?: number;
   friendRequests?: FriendRequest[] | null;
   handleSendFriendRequest?: (userId: string) => void;
+  nameOnly?: boolean;
 }
 
 const UserProfileTag = ({
@@ -26,6 +27,7 @@ const UserProfileTag = ({
   index,
   friendRequests,
   handleSendFriendRequest,
+  nameOnly,
 }: Props) => {
   const { userId } = useAuth();
   const [theUser, setTheUser] = useState<User | null>();
@@ -42,6 +44,8 @@ const UserProfileTag = ({
   }, []);
 
   if (!theUser || theUser === null) return;
+
+  if (nameOnly) return <p>{theUser.fullName}</p>;
 
   return (
     <div
@@ -98,7 +102,7 @@ const UserProfileTag = ({
                     handleSendFriendRequest(theUser?.userId)
                   }
                   variant="green"
-                  className="w-[35px] h-[35px]"
+                  className="btn-round"
                 >
                   <AddUserButton />
                   {theUser.friendRequests ? (
@@ -113,7 +117,7 @@ const UserProfileTag = ({
 
             {theUser.userId !== userId && (
               <Link href={`/profile/${theUser.userId}`}>
-                <Button className="w-[35px] h-[35px]">
+                <Button className="btn-round">
                   <ProfileButton />
                 </Button>
               </Link>

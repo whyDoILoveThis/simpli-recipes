@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Breakfast from "../icons/category icons/Breakfast";
 import Lunch from "../icons/category icons/Lunch";
 import Dinner from "../icons/category icons/Dinner";
@@ -20,11 +20,39 @@ import { useToast } from "@/hooks/use-toast";
 import { HiLink } from "react-icons/hi2";
 import { fbFavoriteRecipe } from "@/firebase/fbFavoriteRecipe";
 import { useAuth } from "@clerk/nextjs";
+import { Input } from "./input";
+import Plus from "../icons/Plus";
+import { fbAddComment } from "@/firebase/fbAddComment";
+import DateAndTime from "./DateAndTime";
+import { fbGetComments } from "@/firebase/fbGetComments";
+import { fbDeleteComment } from "@/firebase/fbDeleteComment";
+import CommentCard from "./CommentCard";
+import CommentCardSkeleton from "./CommentCardSkeleton";
 
 const RecipeCardOpen = ({ recipe }: { recipe: Recipe }) => {
   const { userId } = useAuth();
   const { toast } = useToast();
   const recipeLink = `${window.location.origin}/recipe/${recipe.uid}`;
+  const [commentText, setCommentText] = useState("");
+  const [comments, setComments] = useState<Comment[] | null>();
+  const [commentFetchTrigger, setCommentFetchTrigger] = useState(false);
+  const [loadingComment, setLoadingComment] = useState(false);
+  const [selectedCommentIndex, setSelectedCommentIndex] = useState(-999);
+  const [loadingFavorite, setLoadingFavorite] = useState(false);
+
+  useEffect(() => {
+    const g = async () => {
+      recipe.uid && setComments(await fbGetComments(recipe.uid));
+    };
+    g();
+  }, []);
+
+  useEffect(() => {
+    const g = async () => {
+      recipe.uid && setComments(await fbGetComments(recipe.uid));
+    };
+    g();
+  }, [commentFetchTrigger]);
 
   const shareRecipe = async () => {
     let hasShare = false;
@@ -59,18 +87,50 @@ const RecipeCardOpen = ({ recipe }: { recipe: Recipe }) => {
   };
 
   const handleFavorite = async (usersUid: string, recipeId: string) => {
+    setLoadingFavorite(true);
     try {
       await fbFavoriteRecipe(usersUid, recipeId);
       toast({ title: "Added to Favorites!💖", variant: "pink" });
+      setLoadingFavorite(false);
     } catch (err) {
       console.log(err);
     }
   };
 
+  const handleAddComment = async (recipeId: string) => {
+    if (commentText.trim() === "") return;
+    setLoadingComment(true);
+    try {
+      userId && (await fbAddComment(recipeId, userId, commentText));
+      toast({
+        title: "Comment added! 😁",
+        variant: "blue",
+      });
+      setCommentFetchTrigger(!commentFetchTrigger);
+      setCommentText("");
+      setLoadingComment(false);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleDeleteComment = async (recipeId: string, commentUid: string) => {
+    try {
+      await fbDeleteComment(recipeId, commentUid);
+      toast({
+        title: "Comment deleted! ❌",
+        variant: "red",
+      });
+      setCommentFetchTrigger(!commentFetchTrigger);
+    } catch (err) {
+      console.log("!!!!!!!! delete comment err::", err);
+    }
+  };
+
   return (
-    <article className="w-full overflow-y-auto p-4 flex flex-col items-center">
+    <article className="w-full overflow-y-auto flex flex-col items-center">
       {recipe.photoUrl && recipe.photoUrl !== "" && (
-        <div className="p-5">
+        <div className="p-8">
           <Image
             className="rounded-2xl"
             width={300}
@@ -90,47 +150,50 @@ const RecipeCardOpen = ({ recipe }: { recipe: Recipe }) => {
             onClick={() => {
               recipe.uid && userId && handleFavorite(userId, recipe.uid);
             }}
-            className="w-[35px] h-[35px]"
+            className="btn-round"
             variant={"pink"}
           >
             <Heart />
           </Button>
         }
-        <Link href={`/recipe/${recipe.uid}`}>
-          <Button className="w-[35px] h-[35px] p-0">
-            <FaPager width={"20px"} />
+        {
+          <Link href={`/recipe/${recipe.uid}`}>
+            <Button className="btn-round p-0">
+              <FaPager width={"20px"} />
+            </Button>
+          </Link>
+        }
+        {
+          <Button
+            onClick={() => {
+              copyLink();
+            }}
+            className="btn-round p-0"
+          >
+            <HiLink width={"px"} />
           </Button>
-        </Link>
-        <Button
-          onClick={() => {
-            copyLink();
-          }}
-          className="w-[35px] h-[35px] p-0"
-        >
-          <HiLink width={"px"} />
-        </Button>
-        <Button
-          onClick={() => {
-            shareRecipe() || copyLink();
-          }}
-          className="w-[35px] h-[35px] p-0"
-        >
-          <BsFillShareFill />
-        </Button>
+        }
+        {
+          <Button
+            onClick={() => {
+              shareRecipe() || copyLink();
+            }}
+            className="btn-round p-0"
+          >
+            <BsFillShareFill />
+          </Button>
+        }
       </div>
       <div className="gap-8 flex items-center">
         <RecipeCardBubble text={"ingredients"} color="orange">
           {recipe.ingredients && recipe.ingredients.length}
         </RecipeCardBubble>
-
         <RecipeCardBubble text={recipe.totalTime} color="purple">
           <div className="p-1">
             <Hourglass />
           </div>
         </RecipeCardBubble>
-
         <RecipeCardBubble text={recipe.category} color="blue">
-          {" "}
           {recipe.category === "breakfast" && <Breakfast />}
           {recipe.category === "lunch" && <Lunch />}
           {recipe.category === "dinner" && <Dinner />}
@@ -172,6 +235,59 @@ const RecipeCardOpen = ({ recipe }: { recipe: Recipe }) => {
           <p>{recipe.notes}</p>
         </div>
       )}
+      <div className="my-4">
+        <div className="flex flex-col gap-2 items-center justify-center">
+          {comments && comments.length > 0 ? (
+            <div className="flex flex-col items-center">
+              <h2 className="mb-2">Comments &#40;{comments.length}&#41;</h2>
+              {comments.map((comment, index) => {
+                return (
+                  <div className="w-full" key={index}>
+                    {comment.parentCommentId === null && (
+                      <div
+                        onClick={() => {
+                          setSelectedCommentIndex(index);
+                        }}
+                        className="flex flex-col items-center w-full"
+                      >
+                        <CommentCard
+                          recipe={recipe}
+                          comment={comment}
+                          handleDeleteComment={handleDeleteComment}
+                          commentFetchTrigger={commentFetchTrigger}
+                          setCommentFetchTrigger={setCommentFetchTrigger}
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              {loadingComment && <CommentCardSkeleton />}
+            </div>
+          ) : (
+            <p>No comments </p>
+          )}
+          <div className="flex gap-1 items-center border rounded-full p-1">
+            <Input
+              className="border-none"
+              value={commentText}
+              onChange={(e) => {
+                setCommentText(e.target.value);
+              }}
+            />
+            <Button
+              onClick={() => {
+                recipe.uid && handleAddComment(recipe.uid);
+                comments?.length &&
+                  setSelectedCommentIndex(comments.length - 1);
+              }}
+              className="btn-round text-2xl"
+            >
+              <Plus />
+            </Button>
+          </div>
+        </div>
+      </div>
     </article>
   );
 };

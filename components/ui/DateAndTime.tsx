@@ -1,9 +1,12 @@
 import { Timestamp } from "firebase/firestore";
 import React from "react";
 
-const DateAndTime = ({ timestamp }: { timestamp: Timestamp }) => {
+const DateAndTime = ({ timestamp }: { timestamp: Timestamp | Date }) => {
+  if (timestamp instanceof Date) {
+    return;
+  }
   return (
-    <p className="text-sm text-slate-400">
+    <p className="text-[11px] text-slate-400">
       {timestamp.toDate().toLocaleString("en-US", {
         weekday: "short",
         year: "numeric",

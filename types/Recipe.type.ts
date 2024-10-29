@@ -15,7 +15,7 @@ interface Recipe {
     ingredients: string[];  // List of ingredients
     totalTime: string;
     totalTimeTemp: number;
-    comments: string[];  // Store comment IDs for scalability
+    comments: Comment[];  // Store comment IDs for scalability
     timesFavorited?: number;
 }
 
@@ -27,5 +27,33 @@ enum RecipeCategory {
     Snack = 'snack',
     Beverage = 'beverage',
     Other = 'other'  // For recipes that don't fit the main categories
-}}
+}
+
+interface Comment {
+    commentUid: string;
+    userUid: string;
+    comment: string;
+    parentCommentId?: string | null;
+    postedAt: Timestamp | Date;
+    reactions?: Reaction[];
+}
+
+interface Reaction {
+    reactionUid: string;
+    userUid: string;
+    theReaction?: PossibleReactions | null
+    reactedAt: Timestamp | Date;
+}
+
+enum PossibleReactions {
+    Like = 'like',
+    RockOn = 'rock-on',
+    Dislike = 'dislike',
+    Love = 'love',
+    Funny = 'funny',
+    Angry = 'angry',
+    FlipBird = 'flip-bird',
+    None = 'none',
+}
+}
 
