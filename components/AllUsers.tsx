@@ -16,7 +16,6 @@ const AllUsers = () => {
   const { refetchUser } = useUserStore();
   const [selectedUserIndex, setSelectedUserIndex] = useState(-999);
   const { userId } = useAuth();
-  const [sentRequests, setSentRequests] = useState<string[]>([]); // State to track sent requests
   const { mySentRequests, loadingSentRequests, refetchSentRequests } =
     useSentRequests();
   const { friendRequests, refetchFriendRequests } = useFriendRequests();
@@ -25,7 +24,6 @@ const AllUsers = () => {
     try {
       if (userId && recipientId) {
         await fbSendFriendRequest(userId, recipientId);
-        setSentRequests((prev) => [...prev, recipientId]); // Add recipient to sent requests
         fetchAllUsers();
       }
     } catch (error) {
@@ -33,17 +31,6 @@ const AllUsers = () => {
     }
     refetchUser();
   };
-
-  useEffect(() => {
-    setSentRequests(mySentRequests);
-    fetchAllUsers();
-  }, [mySentRequests]);
-  useEffect(() => {
-    fetchAllUsers();
-    refetchSentRequests();
-    refetchFriendRequests();
-    setSentRequests(mySentRequests);
-  }, []);
 
   console.log(allUsers);
 

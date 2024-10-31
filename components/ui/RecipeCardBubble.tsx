@@ -3,9 +3,9 @@ import React from "react";
 interface Props {
   children: React.ReactNode;
   text?: string;
-  color: string;
+  color?: string;
 }
-const RecipeCardBubble = ({ children, text, color }: Props) => {
+const RecipeCardBubble = ({ children, text, color = "slate" }: Props) => {
   return (
     <div className="flex w-[60px] flex-col items-center justify-center">
       <div

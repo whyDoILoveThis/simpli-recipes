@@ -17,6 +17,9 @@ interface Props {
   friendRequests?: FriendRequest[] | null;
   handleSendFriendRequest?: (userId: string) => void;
   nameOnly?: boolean;
+  nameSize?: string;
+  imageOnly?: boolean;
+  imageSize?: number;
 }
 
 const UserProfileTag = ({
@@ -28,6 +31,9 @@ const UserProfileTag = ({
   friendRequests,
   handleSendFriendRequest,
   nameOnly,
+  nameSize,
+  imageOnly,
+  imageSize = 30,
 }: Props) => {
   const { userId } = useAuth();
   const [theUser, setTheUser] = useState<User | null>();
@@ -45,7 +51,21 @@ const UserProfileTag = ({
 
   if (!theUser || theUser === null) return;
 
-  if (nameOnly) return <p>{theUser.fullName}</p>;
+  if (nameOnly) return <p className={`text-${nameSize}`}>{theUser.fullName}</p>;
+
+  if (imageOnly) {
+    return (
+      theUser.photoUrl && (
+        <Image
+          className="rounded-full"
+          width={imageSize}
+          height={imageSize}
+          src={theUser.photoUrl}
+          alt={theUser.photoUrl}
+        />
+      )
+    );
+  }
 
   return (
     <div

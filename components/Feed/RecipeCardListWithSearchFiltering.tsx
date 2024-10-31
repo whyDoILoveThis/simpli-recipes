@@ -173,19 +173,23 @@ const FriendsPosts = ({
   const totalPages = Math.ceil(totalRecipes / recipesPerPage);
 
   return (
-    <div>
+    <div className="flex flex-col items-center ">
       {/* Search Bar */}
-      <div className="flex flex-col mb-2 gap-2">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col items-center mb-2 gap-2 w-full">
+        <div
+          className={`flex items-center w-full gap-2 ${
+            showSearch && "justify-center"
+          }`}
+        >
           <div
-            className={`border rounded-full ${
-              !showSearch ? "w-[38px]" : "w-[180px]"
-            } transition-all duration-400 flex items-center`}
+            className={`border rounded-full  transition-all duration-400 flex ${
+              showSearch && "items-center w-full max-w-[180px]"
+            }`}
           >
             <Input
               type="text"
-              placeholder="Search for recipes..."
-              className={`${
+              placeholder="Search recipes..."
+              className={`w-[140px] ${
                 !showSearch && "w-0 p-0 h-0 "
               } transition-all duration-500 border-none rounded-full`}
               value={searchTerm}
@@ -194,9 +198,16 @@ const FriendsPosts = ({
             <Button
               variant={"ghost"}
               onClick={() => setShowSearch(true)}
-              className="rounded-full border-0 p-3 border-l"
+              className="flex items-center rounded-full border-0 p-3 border-l"
             >
               <Search />
+              <p
+                className={`ml-1 opacity-0 w-0 ${
+                  !showSearch && "opacity-100 w-fit"
+                }`}
+              >
+                Search
+              </p>
             </Button>
           </div>
           {showSearch && (
