@@ -26,8 +26,8 @@ import { fbAddComment } from "@/firebase/fbAddComment";
 import DateAndTime from "./DateAndTime";
 import { fbGetComments } from "@/firebase/fbGetComments";
 import { fbDeleteComment } from "@/firebase/fbDeleteComment";
-import CommentCard from "./CommentCard";
-import CommentCardSkeleton from "./CommentCardSkeleton";
+import CommentCard from "./Comments/CommentCard";
+import CommentCardSkeleton from "./Comments/CommentCardSkeleton";
 
 const RecipeCardOpen = ({ recipe }: { recipe: Recipe }) => {
   const { userId } = useAuth();
