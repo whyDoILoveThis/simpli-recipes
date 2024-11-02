@@ -7,10 +7,12 @@ import { useAuth } from "@clerk/nextjs";
 import Reply from "../../icons/Reply";
 import { Input } from "../input";
 import Plus from "../../icons/Plus";
-import { fbGetUserById } from "@/firebase/fbGetUserById";
 import CommentReplys from "./CommentReplys";
+import { fbGetUserById } from "@/firebase/fbGetUserById";
 import { fbAddComment } from "@/firebase/fbAddComment";
 import { fbGetComments } from "@/firebase/fbGetComments";
+import { fbAddReactionToComment } from "@/firebase/fbAddReactionToComment";
+import { fbRemoveReaction } from "@/firebase/fbRemoveReaction";
 import Chevron from "../../icons/Chevron";
 import CommentsIcon from "../../icons/CommentsIcon";
 import Like from "../../icons/reaction icons/Like";
@@ -22,11 +24,9 @@ import Love from "../../icons/reaction icons/Love";
 import Funny from "../../icons/reaction icons/Funny";
 import Angry from "../../icons/reaction icons/Angry";
 import FlipBird from "../../icons/reaction icons/FlipBird";
-import { fbAddReactionToComment } from "@/firebase/fbAddReactionToComment";
 import ReactionIconRenderer from "../ReactionIconRenderer";
 import LoaderSpinner from "../LoaderSpinner";
 import None from "../../icons/reaction icons/None";
-import { fbRemoveReaction } from "@/firebase/fbRemoveReaction";
 import CommentCardSkeleton from "./CommentCardSkeleton";
 
 interface Props {
