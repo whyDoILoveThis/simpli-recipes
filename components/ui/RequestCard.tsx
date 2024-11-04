@@ -34,7 +34,7 @@ const RequestCard = ({
   return (
     <div
       key={index}
-      className=" relative flex flex-col items-center gap-2 border rounded-3xl p-3 m-2"
+      className=" relative bg-black bg-opacity-15 dark:bg-white dark:bg-opacity-10 flex flex-col items-center gap-2 border rounded-3xl p-3 m-2"
     >
       <div className="flex w-full gap-3">
         <DropdownMenu>

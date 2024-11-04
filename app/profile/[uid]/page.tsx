@@ -60,7 +60,7 @@ const Page = ({ params: { uid } }: { params: { uid: string } }) => {
       <div className="w-full flex justify-center mt-2">
         {theUser && theUser.userId && (
           <div className="flex flex-col w-full gap-2 justify-center items-center">
-            <div className="shadow-lg shadow-teal-600 rounded-full">
+            <div className="shadow-blue-lite rounded-full">
               <UserProfileTag
                 dbUser={theUser}
                 imageOnly={true}

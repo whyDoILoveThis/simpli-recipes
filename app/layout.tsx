@@ -40,7 +40,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html className="flex justify-center" lang="en">
-        <body className="max-w-[800px] w-[800px] mt-14 flex flex-col">
+        <body className="max-w-[800px] w-[800px] pt-14 flex flex-col">
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -51,20 +51,26 @@ export default function RootLayout({
               <SignInButton />
             </SignedOut>
             <SignedIn>
-              <nav className=" z-[1] fixed top-0 left-0 w-full backdrop-blur-lg flex justify-center items-center p-2 px-4 border-b bg-black bg-opacity-15 dark:bg-white dark:bg-opacity-15">
+              <nav className=" z-50 fixed top-0 left-0 w-full backdrop-blur-lg flex justify-center items-center p-2 px-4 border-b bg-teal-500 bg-opacity-15 dark:bg-white dark:bg-opacity-15">
                 <div className="w-full max-w-[800px] flex items-center justify-between">
-                  <Link href={"/feed"}>
-                    <Image width={50} height={10} src={logo} alt={"logo"} />
+                  <Link
+                    className="flex justify-center items-center font-bold"
+                    href={"/feed"}
+                  >
+                    <Image width={40} height={10} src={logo} alt={"logo"} />
+                    <p className="text-md translate-y-1 text-blue-100 leading-none">
+                      Simpli<span className="text-orange-300">Recipes</span>
+                    </p>
                   </Link>
                   <div className="flex items-center gap-6">
-                    <ul className="flex gap-3 ">
-                      <li className="text-slate-400 hover:text-white">
+                    <ul className="flex gap-4">
+                      <li className="text-slate-200 hover:text-orange-300 font-bold">
                         <Link href={"/"}>Profile</Link>
                       </li>
-                      <li className="text-slate-400 hover:text-white">
+                      <li className="text-slate-200 hover:text-orange-300 font-bold">
                         <Link href={"/feed"}>Feed</Link>
                       </li>
-                      <li className="text-slate-400 hover:text-white">
+                      <li className="text-slate-200 hover:text-orange-300 font-bold">
                         <Link href={"/create"}>Create</Link>
                       </li>
                     </ul>

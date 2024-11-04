@@ -182,7 +182,7 @@ const FriendsPosts = ({
           }`}
         >
           <div
-            className={`border rounded-full  transition-all duration-400 flex ${
+            className={`border overflow-hidden rounded-full  transition-all duration-400 flex ${
               showSearch && "items-center w-full max-w-[180px]"
             }`}
           >
@@ -196,7 +196,6 @@ const FriendsPosts = ({
               onChange={(e) => setSearchTerm(e.target.value)} // Update search term as user types
             />
             <Button
-              variant={"ghost"}
               onClick={() => setShowSearch(true)}
               className="flex items-center rounded-full border-0 p-3 border-l"
             >

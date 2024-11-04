@@ -7,7 +7,7 @@ import "@/styles/loader.css";
 const Page = () => {
   return (
     <div>
-      <h2 className="underline text-center mb-4">Feed</h2>
+      <h2 className="font-bold text-center mb-4">Feed</h2>
       <Tabs
         defaultValue="all-posts"
         className="flex w-full flex-col items-center"

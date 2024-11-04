@@ -14,7 +14,11 @@ const Page = ({ params: { recipeUid } }: { params: { recipeUid: string } }) => {
 
   console.log(recipe);
 
-  return <div>{recipe && <RecipeCardOpen recipe={recipe} />}</div>;
+  return (
+    <div>
+      {recipe && <RecipeCardOpen showPageLink={false} recipe={recipe} />}
+    </div>
+  );
 };
 
 export default Page;

@@ -62,7 +62,7 @@ const MyFriends = ({ userUid }: Props) => {
         localFriends.map((friend, index) => (
           <div
             key={index}
-            className="relative flex items-center gap-4 border rounded-3xl p-3 m-2"
+            className="relative bg-black bg-opacity-15 dark:bg-white dark:bg-opacity-10 flex items-center gap-4 border rounded-3xl p-3 m-2"
           >
             <DropdownMenu>
               <MyDropdownTrigger />

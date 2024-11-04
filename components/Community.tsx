@@ -9,9 +9,7 @@ const Community = () => {
   return (
     <div>
       {" "}
-      <h2 className="text-center underline underline-offset-8 decoration-1 mb-6 mt-8">
-        Community
-      </h2>
+      <h2 className="text-center font-bold mb-6 mt-8">Community</h2>
       <Tabs
         defaultValue="all-users"
         className="flex w-full flex-col items-center"

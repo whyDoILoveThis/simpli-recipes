@@ -5,7 +5,7 @@ interface Props {
   zIndex?: string;
 }
 
-const Popover = ({ children, zIndex }: Props) => {
+const Popover = ({ children, zIndex = "999" }: Props) => {
   const isOpen = true;
   useEffect(() => {
     // Disable body scroll when popover is open
@@ -22,7 +22,7 @@ const Popover = ({ children, zIndex }: Props) => {
   }, []);
   return (
     <div
-      className={`bg-black pt-14 bg-opacity-60 fixed z-${zIndex} top-0 left-0 w-screen h-screen backdrop-blur-md 
+      className={`bg-black pt-14 bg-opacity-60 fixed z-40 top-0 left-0 w-screen h-screen backdrop-blur-md 
                     flex flex-col items-center 
     `}
     >

@@ -128,9 +128,7 @@ export default function RecipeManager() {
 
   return (
     <div className="flex flex-col justify-center items-center m-4 mt-0 ">
-      <h2 className="text-center underline underline-offset-8 decoration-1 mb-6 mt-8">
-        Your Recipes
-      </h2>
+      <h2 className="text-center font-bold mb-6 mt-8">Your Recipes</h2>
 
       <RecipeCardListWithSearchFiltering
         filterMine={true}
@@ -144,7 +142,7 @@ export default function RecipeManager() {
         <Plus />
       </Button>
       {adding && (
-        <Popover zIndex="99">
+        <Popover>
           <div className="py-4 max-w-[430px] overflow-y-auto">
             <RecipeForm
               mode="add"

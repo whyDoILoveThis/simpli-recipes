@@ -28,8 +28,14 @@ import { fbGetComments } from "@/firebase/fbGetComments";
 import { fbDeleteComment } from "@/firebase/fbDeleteComment";
 import CommentCard from "./Comments/CommentCard";
 import CommentCardSkeleton from "./Comments/CommentCardSkeleton";
+import LoaderSpinner from "./LoaderSpinner";
 
-const RecipeCardOpen = ({ recipe }: { recipe: Recipe }) => {
+interface Props {
+  recipe: Recipe;
+  showPageLink?: boolean;
+}
+
+const RecipeCardOpen = ({ recipe, showPageLink = true }: Props) => {
   const { userId } = useAuth();
   const { toast } = useToast();
   const recipeLink = `${window.location.origin}/recipe/${recipe.uid}`;
@@ -150,19 +156,20 @@ const RecipeCardOpen = ({ recipe }: { recipe: Recipe }) => {
             onClick={() => {
               recipe.uid && userId && handleFavorite(userId, recipe.uid);
             }}
-            className="btn-round"
+            className="w-fit px-2 flex gap-1"
             variant={"pink"}
           >
-            <Heart />
+            {loadingFavorite ? <LoaderSpinner /> : <Heart />}
+            <p>{recipe.timesFavorited ? recipe.timesFavorited : 0}</p>
           </Button>
         }
-        {
+        {showPageLink && (
           <Link href={`/recipe/${recipe.uid}`}>
             <Button className="btn-round p-0">
               <FaPager width={"20px"} />
             </Button>
           </Link>
-        }
+        )}
         {
           <Button
             onClick={() => {

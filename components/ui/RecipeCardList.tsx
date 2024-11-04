@@ -15,6 +15,11 @@ import { fbGetUserById } from "@/firebase/fbGetUserById";
 import Link from "next/link";
 import { Button } from "./button";
 import MyDropdownTrigger from "./MyDropdownTrigger";
+import { fbFavoriteRecipe } from "@/firebase/fbFavoriteRecipe";
+import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@clerk/nextjs";
+import Heart from "../icons/Heart";
+import LoaderSpinner from "./LoaderSpinner";
 
 interface Props {
   recipes: Recipe[];
@@ -27,8 +32,24 @@ const RecipeCardList = ({
   handleEditRecipe,
   handleDeleteRecipe,
 }: Props) => {
+  const { userId } = useAuth();
   const [selectedRecipeIndex, setSelectedRecipeIndex] = useState(-999);
   const [viewingRecipe, setViewingRecipe] = useState(false);
+  const [loadingFavorite, setLoadingFavorite] = useState(false);
+  const [favoriteIndex, setFavoriteIndex] = useState(-999);
+
+  const handleFavorite = async (usersUid: string, recipeId: string) => {
+    setLoadingFavorite(true);
+    try {
+      await fbFavoriteRecipe(usersUid, recipeId);
+      toast({ title: "Added to Favorites!💖", variant: "pink" });
+      setLoadingFavorite(false);
+      setFavoriteIndex(-999);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="grid sm:grid-cols-2 items-center p-2 gap-4">
       {recipes.map((recipe, index) => (
@@ -36,15 +57,40 @@ const RecipeCardList = ({
           key={recipe.uid}
           className={`
               ${selectedRecipeIndex !== index && viewingRecipe && " invisible"}
-              recipe-item relative border rounded-2xl  w-fit flex flex-col items-center`}
+              recipe-item relative border rounded-2xl overflow-hidden w-fit flex flex-col items-center`}
         >
-          <div className="absolute left-0 p-2">
+          <div
+            className={`absolute right-2 top-2 z-10  ${
+              viewingRecipe && " z-[-99]"
+            }`}
+          >
+            <Button
+              onClick={() => {
+                recipe.uid && userId && handleFavorite(userId, recipe.uid);
+                setFavoriteIndex(index);
+              }}
+              className={`flex gap-1 backdrop-blur-lg`}
+              variant={"pink"}
+            >
+              {loadingFavorite && index === favoriteIndex ? (
+                <LoaderSpinner />
+              ) : (
+                <Heart />
+              )}
+              <p>{recipe.timesFavorited ? recipe.timesFavorited : 0}</p>
+            </Button>
+          </div>
+          <div
+            className={`absolute z-[1] left-0 p-2  ${
+              viewingRecipe && " z-[-99]"
+            }`}
+          >
             <Link href={`/profile/${recipe.creatorUid}`}>
               <UserProfileTag dbUserId={recipe.creatorUid} />
             </Link>
           </div>
           <article
-            className=" w-full h-full cursor-pointer p-2"
+            className=" w-full h-full relative cursor-pointer"
             onClick={() => {
               setSelectedRecipeIndex(index);
               setViewingRecipe(true);
@@ -56,9 +102,12 @@ const RecipeCardList = ({
                 height={80}
                 src={recipe.photoUrl}
                 alt={recipe.photoUrl}
+                className="w-full"
               />
             )}
-            <h2 className="text-center">{recipe.title}</h2>
+            <h2 className="text-center font-bold text-slate-100 bg-black bg-opacity-30 w-full backdrop-blur-sm absolute bottom-0">
+              {recipe.title}
+            </h2>
           </article>
           {selectedRecipeIndex === index && (
             <Popover zIndex="59">
