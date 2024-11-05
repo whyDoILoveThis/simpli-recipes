@@ -2,19 +2,15 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import "@/styles/Clerk.css";
-import logo from "@/images/recipes-logo.png";
 import {
   ClerkProvider,
   SignedIn,
   SignedOut,
   SignInButton,
-  UserButton,
 } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
-import { ModeToggle } from "@/components/ModeToggle";
-import Link from "next/link";
-import Image from "next/image";
 import { Toaster } from "@/components/ui/toaster";
+import Navbar from "@/components/ui/Navbar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -51,36 +47,7 @@ export default function RootLayout({
               <SignInButton />
             </SignedOut>
             <SignedIn>
-              <nav className=" z-50 fixed top-0 left-0 w-full backdrop-blur-lg flex justify-center items-center p-2 px-4 border-b bg-teal-500 bg-opacity-15 dark:bg-white dark:bg-opacity-15">
-                <div className="w-full max-w-[800px] flex items-center justify-between">
-                  <Link
-                    className="flex justify-center items-center font-bold"
-                    href={"/feed"}
-                  >
-                    <Image width={40} height={10} src={logo} alt={"logo"} />
-                    <p className="text-md translate-y-1 text-blue-100 leading-none">
-                      Simpli<span className="text-orange-300">Recipes</span>
-                    </p>
-                  </Link>
-                  <div className="flex items-center gap-6">
-                    <ul className="flex gap-4">
-                      <li className="text-slate-200 hover:text-orange-300 font-bold">
-                        <Link href={"/"}>Profile</Link>
-                      </li>
-                      <li className="text-slate-200 hover:text-orange-300 font-bold">
-                        <Link href={"/feed"}>Feed</Link>
-                      </li>
-                      <li className="text-slate-200 hover:text-orange-300 font-bold">
-                        <Link href={"/create"}>Create</Link>
-                      </li>
-                    </ul>
-                    <div className="flex gap-2">
-                      <UserButton />
-                      <ModeToggle />
-                    </div>
-                  </div>
-                </div>
-              </nav>
+              <Navbar />
               <Toaster />
             </SignedIn>
             {children}
