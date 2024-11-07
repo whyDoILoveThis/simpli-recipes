@@ -4,19 +4,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
 import { Button } from "../button";
-import AddUserButton from "@/components/icons/AddUserButton";
 import ProfileButton from "@/components/icons/ProfileButton";
 import { fbGetUserById } from "@/firebase/fbGetUserById";
+import { useFriendRequests } from "@/hooks/useFriendRequests";
+import AddUserButton from "../AddUserButton";
 
 interface Props {
   dbUser?: User | null;
   dbUserId?: string;
-  setSelectedUserIndex?: (index: number) => void;
-  selectedUserIndex?: number;
-  index?: number;
-  friendRequests?: FriendRequest[] | null;
-  handleSendFriendRequest?: (userId: string) => void;
   nameOnly?: boolean;
+  nameOnlyClassNames?: string[];
   nameSize?: string;
   imageOnly?: boolean;
   imageSize?: number;
@@ -25,18 +22,16 @@ interface Props {
 const UserProfileTag = ({
   dbUser,
   dbUserId,
-  setSelectedUserIndex,
-  selectedUserIndex,
-  index,
-  friendRequests,
-  handleSendFriendRequest,
   nameOnly,
+  nameOnlyClassNames,
   nameSize,
   imageOnly,
   imageSize = 30,
 }: Props) => {
   const { userId } = useAuth();
   const [theUser, setTheUser] = useState<User | null>();
+  const { friendRequests, refetchFriendRequests } = useFriendRequests();
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     if (dbUserId !== null && dbUserId) {
@@ -51,7 +46,16 @@ const UserProfileTag = ({
 
   if (!theUser || theUser === null) return;
 
-  if (nameOnly) return <p className={`text-${nameSize}`}>{theUser.fullName}</p>;
+  if (nameOnly)
+    return (
+      <p
+        className={`text-${nameSize} ${
+          nameOnlyClassNames && nameOnlyClassNames
+        }`}
+      >
+        {theUser.fullName}
+      </p>
+    );
 
   if (imageOnly) {
     return (
@@ -70,80 +74,53 @@ const UserProfileTag = ({
   return (
     <div
       onClick={() => {
-        setSelectedUserIndex !== undefined &&
-          index !== undefined &&
-          theUser !== null &&
-          theUser?.userId !== userId &&
-          setSelectedUserIndex(index);
+        setIsOpen(!isOpen);
       }}
       className={`${
-        selectedUserIndex !== index &&
-        theUser.userId !== userId &&
-        "cursor-pointer"
+        !isOpen && "cursor-pointer"
       } flex gap-2 items-center rounded-3xl border w-fit p-2 backdrop-blur-lg bg-black bg-opacity-40`}
-      key={index}
+      key={theUser.userId}
     >
       {theUser.photoUrl && (
         <Image
-          className="rounded-full"
+          className="rounded-full selection:bg-none select-none"
           width={30}
           height={30}
           src={theUser.photoUrl}
           alt={theUser.photoUrl}
         />
       )}
-      <p>{theUser.fullName}</p>
-      {handleSendFriendRequest !== undefined &&
-        selectedUserIndex === index &&
-        theUser.userId !== userId && (
-          <div className="flex items-center gap-2">
-            {theUser.userId &&
-              userId &&
-              // Check if friendRequests is an array and find if there's a match
-              !(
-                Array.isArray(theUser.friendRequests) &&
-                theUser.friendRequests.find((req) => req.requesterId === userId)
-              ) &&
-              !(
-                Array.isArray(theUser.friends) &&
-                theUser.friends.includes(userId)
-              ) &&
-              !(
-                Array.isArray(friendRequests) &&
-                theUser !== null &&
-                friendRequests.find(
-                  (req) => req.requesterId === theUser?.userId
-                )
-              ) && (
-                <Button
-                  onClick={() =>
-                    theUser !== null &&
-                    theUser?.userId &&
-                    handleSendFriendRequest(theUser?.userId)
-                  }
-                  variant="green"
-                  className="btn-round"
-                >
-                  <AddUserButton />
-                  {theUser.friendRequests ? (
-                    theUser.friendRequests?.map((req, index) => (
-                      <span key={index}>{req.requesterId}</span>
-                    ))
-                  ) : (
-                    <p>ass</p>
-                  )}
-                </Button>
-              )}
+      <p className="selection:bg-none selection:select-none select-none">
+        {theUser.fullName}
+      </p>
+      {isOpen && (
+        <div className="flex items-center gap-2">
+          {theUser.userId &&
+            userId &&
+            theUser.userId !== userId &&
+            // Check if friendRequests is an array and find if there's a match
+            !(
+              Array.isArray(theUser.friendRequests) &&
+              theUser.friendRequests.find((req) => req.requesterId === userId)
+            ) &&
+            !(
+              Array.isArray(theUser.friends) && theUser.friends.includes(userId)
+            ) &&
+            !(
+              Array.isArray(friendRequests) &&
+              theUser !== null &&
+              friendRequests.find((req) => req.requesterId === theUser?.userId)
+            ) && <AddUserButton theUser={theUser} />}
 
-            {theUser.userId !== userId && (
-              <Link href={`/profile/${theUser.userId}`}>
-                <Button className="btn-round">
-                  <ProfileButton />
-                </Button>
-              </Link>
-            )}
-          </div>
-        )}
+          {isOpen && (
+            <Link href={`/profile/${theUser.userId}`}>
+              <Button className="btn-round translate-x-">
+                <ProfileButton />
+              </Button>
+            </Link>
+          )}
+        </div>
+      )}
     </div>
   );
 };

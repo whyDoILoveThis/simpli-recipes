@@ -81,13 +81,11 @@ const RecipeCardList = ({
             </Button>
           </div>
           <div
-            className={`absolute z-[1] left-0 p-2  ${
+            className={`absolute min-w-[245px] z-[1] left-0 p-2  ${
               viewingRecipe && " z-[-99]"
             }`}
           >
-            <Link href={`/profile/${recipe.creatorUid}`}>
-              <UserProfileTag dbUserId={recipe.creatorUid} />
-            </Link>
+            <UserProfileTag dbUserId={recipe.creatorUid} />
           </div>
           <article
             className=" w-full h-full relative cursor-pointer"
@@ -105,7 +103,7 @@ const RecipeCardList = ({
                 className="w-full"
               />
             )}
-            <h2 className="text-center font-bold text-slate-100 bg-black bg-opacity-30 w-full backdrop-blur-sm absolute bottom-0">
+            <h2 className="text-center font-bold text-slate-100 shadow-bottom w-full absolute bottom-0">
               {recipe.title}
             </h2>
           </article>

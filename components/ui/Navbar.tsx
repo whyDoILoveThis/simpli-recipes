@@ -13,7 +13,7 @@ const Navbar = () => {
     <nav className=" z-50 fixed top-0 left-0 w-full flex justify-center items-center p-2 px-4 border-b bg-teal-500 bg-opacity-15 dark:bg-white dark:bg-opacity-15">
       <div className="z-50 w-full max-w-[800px] max-h-[44px] h-[44px] flex items-center justify-between">
         <Link
-          className="flex justify-center items-center font-bold"
+          className="flex justify-center items-center font-bold 2xs:-translate-x-1 xsmest:translate-x-4"
           href={"/feed"}
         >
           <Image width={40} height={10} src={logo} alt={"logo"} />
@@ -54,7 +54,7 @@ const Navbar = () => {
               onClick={() => {
                 setIsOpen(!isOpen);
               }}
-              className={`fixed top-2 right-10 visible sm:opacity-0 sm:invisible `}
+              className={`fixed -top-1 right-10 visible sm:opacity-0 sm:invisible `}
             >
               {" "}
               <TransitionX bgColor="bg-slate-300" />

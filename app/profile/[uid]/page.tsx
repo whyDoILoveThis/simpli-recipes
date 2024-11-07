@@ -1,6 +1,6 @@
 "use client";
 import RecipeCardListWithSearchFiltering from "@/components/Feed/RecipeCardListWithSearchFiltering";
-import AddUserButton from "@/components/icons/AddUserButton";
+import AddUserButton from "@/components/icons/AddUserIcon";
 import DocumentIcon from "@/components/icons/DocumentIcon";
 import Friends from "@/components/icons/Friends";
 import Heart from "@/components/icons/Heart";
@@ -55,7 +55,7 @@ const Page = ({ params: { uid } }: { params: { uid: string } }) => {
   }
 
   return (
-    <div>
+    <div className="pt-4 px-2">
       {/* User is found, you can display their info here */}
       <div className="w-full flex justify-center mt-2">
         {theUser && theUser.userId && (
@@ -72,6 +72,7 @@ const Page = ({ params: { uid } }: { params: { uid: string } }) => {
                 dbUser={theUser}
                 nameOnly={true}
                 nameSize={"3xl"}
+                nameOnlyClassNames={["font-bold"]}
               />
               <div className="addfriendbutton absolute -right-10">
                 {theUser.userId &&
@@ -122,39 +123,34 @@ const Page = ({ params: { uid } }: { params: { uid: string } }) => {
                   )}
               </div>
             </div>
-            <span className="text-[11px] text-slate-400 flex gap-1">
-              <div className="flex flex-col gap-2 items-center">
-                <span className="flex gap-1">
-                  <p>Joined:</p>
-                  <DateAndTime timestamp={theUser.createdAt} />
-                </span>
-                <p className="mx-8 text-blue-200 text-opacity-90">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                  Doloremque sequi minus illum et fugiat perspiciatis explicabo
-                  accusantium at minima omnis ad pariatur eligendi veniam,
-                  dolore excepturi, non aut cum iusto natus alias! Quae,
-                  temporibus. Tenetur, deleniti nam voluptatum tempore, cumque
-                  rem quasi vitae optio quibusdam pariatur numquam quaerat iste
-                  a.
-                </p>
-              </div>
+            <span className="flex gap-1 text-[11px] text-slate-400">
+              <p>Joined:</p>
+              <DateAndTime timestamp={theUser.createdAt} />
             </span>
-            <div className="flex gap-3 items-center justify-evenly my-4 w-full max-w-[600px]">
+            <div className="flex gap-3 font-bold items-center justify-evenly my-2 mt-4 w-full max-w-[600px]">
               <span className="flex flex-col items-center justify-center text-pink-300">
                 <p className="text-3xl">485</p>
                 <p>Total Hearts</p>
               </span>
-              <div className="text-4xl text-slate-400">|</div>
+              <div className="text-4xl text-blue-200">|</div>
               <span className="flex flex-col items-center justify-center text-blue-300">
                 <p className="text-3xl">987</p>
                 <p>Friends</p>
               </span>
-              <div className="text-4xl text-slate-400">|</div>
+              <div className="text-4xl text-blue-200">|</div>
               <span className="flex flex-col items-center justify-center text-orange-300">
                 <p className="text-3xl">67</p>
                 <p>Creations</p>
               </span>
             </div>
+            <p className="text-[11px] max-w-[500px] mx-8 mb-4 text-blue-200 text-opacity-90">
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+              Doloremque sequi minus illum et fugiat perspiciatis explicabo
+              accusantium at minima omnis ad pariatur eligendi veniam, dolore
+              excepturi, non aut cum iusto natus alias! Quae, temporibus.
+              Tenetur, deleniti nam voluptatum tempore, cumque rem quasi vitae
+              optio quibusdam pariatur numquam quaerat iste a.
+            </p>
           </div>
         )}{" "}
       </div>

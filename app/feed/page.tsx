@@ -6,7 +6,7 @@ import "@/styles/loader.css";
 
 const Page = () => {
   return (
-    <div>
+    <div className="mt-4">
       <h2 className="font-bold text-center mb-4">Feed</h2>
       <Tabs
         defaultValue="all-posts"

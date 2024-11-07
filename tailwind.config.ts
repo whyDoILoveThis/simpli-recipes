@@ -57,6 +57,8 @@ const config: Config = {
   			sm: 'calc(var(--radius) - 4px)'
   		},
 		  screens: {
+	    'xsmest': '320px',
+		'2xs': '427px',        // Extra small devices
         'xs': '475px',        // Extra small devices
         'sm': '640px',        // Small devices (default)
         'md': '768px',        // Medium devices (default)

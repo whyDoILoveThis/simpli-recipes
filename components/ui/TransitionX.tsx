@@ -6,33 +6,35 @@ interface Props {
 }
 const TransitionX = ({ bgColor = "" }: Props) => {
   const [doIt, setDoIt] = useState(false);
+
   return (
-    <div
-      className="ml-5 relative h-11"
+    <button
+      className="relative"
       onClick={() => {
         setDoIt(!doIt);
       }}
     >
+      <span className="absolute w-8 h-8 -translate-x-3.5"></span>
       <div
-        className={`absolute w-2 h-11 rounded-full ${
+        className={`absolute w-1 h-8 rounded-full ${
           bgColor !== "" ? bgColor : "bg-white"
-        } transition-all duration-700 ${doIt ? "rotate-45" : "rotate-90"} `}
+        } transition-all duration-300 ${doIt ? "rotate-45" : "rotate-90"} `}
       ></div>
       <div
-        className={`absolute w-2 h-11 rounded-full  ${
+        className={`absolute w-1 h-8 rounded-full  ${
           bgColor !== "" ? bgColor : "bg-white"
-        } transition-all duration-700 -rotate-45 ${
-          doIt ? "-rotate-45" : "-rotate-90 -translate-y-4"
+        } transition-all duration-500 -rotate-45 ${
+          doIt ? "-rotate-45" : "-rotate-90 -translate-y-3"
         }`}
       ></div>
       <div
-        className={`absolute w-2 h-11 rounded-full  ${
+        className={`absolute w-1 h-8 rounded-full  ${
           bgColor !== "" ? bgColor : "bg-white"
-        } transition-all duration-700 -rotate-45 ${
-          doIt ? "rotate-45" : "-rotate-90 translate-y-4"
+        } transition-all duration-500 -rotate-45 ${
+          doIt ? "rotate-45" : "rotate-90 translate-y-3"
         }`}
       ></div>
-    </div>
+    </button>
   );
 };
 

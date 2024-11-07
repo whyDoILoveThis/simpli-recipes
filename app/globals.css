@@ -96,6 +96,9 @@ body *::-webkit-scrollbar-thumb
 }
 
 
+.z-99 {
+  z-index: 99;
+}
 
 
 .shadow-blue-lite {
@@ -104,6 +107,11 @@ body *::-webkit-scrollbar-thumb
 box-shadow: -1px 3px 40px -20px rgba(0,166,255,1);
 }
 
+
+.shadow-bottom {
+  background: rgb(0,0,0);
+background: linear-gradient(360deg, rgba(0,0,0,1) 18%, rgba(58,55,68,0) 100%);
+}
 
 
 .drop-item {
@@ -206,7 +214,6 @@ h2 {
   position: absolute;
   bottom: 100%;
   
-  z-index: 999;
   opacity: 0;
   transition: opacity 0.3s;
 
