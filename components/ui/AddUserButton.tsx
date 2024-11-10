@@ -5,6 +5,8 @@ import { useAuth } from "@clerk/nextjs";
 import React, { useState } from "react";
 import { Button } from "./button";
 import AddUserIcon from "../icons/AddUserIcon";
+import { useFriendRequests } from "@/hooks/useFriendRequests";
+import DeleteUserIcon from "../icons/DeleteUserIcon";
 
 interface Props {
   theUser: User;
@@ -14,6 +16,7 @@ const AddUserButton = ({ theUser }: Props) => {
   const { allUsers, fetchAllUsers } = useAllUsersStore();
   const { refetchUser } = useUserStore();
   const [sentRequests, setSentRequests] = useState<string[]>([]); // State to track sent requests
+  const { friendRequests, refetchFriendRequests } = useFriendRequests();
 
   const handleSendFriendRequest = async (recipientId: string) => {
     try {
@@ -35,16 +38,26 @@ const AddUserButton = ({ theUser }: Props) => {
         theUser?.userId &&
         handleSendFriendRequest(theUser?.userId)
       }
-      variant="green"
+      variant="destructive"
       className="btn-round"
     >
-      <AddUserIcon />
-      {theUser.friendRequests ? (
-        theUser.friendRequests?.map((req, index) => (
-          <span key={index}>{req.requesterId}</span>
-        ))
+      {theUser.userId &&
+      userId &&
+      theUser.userId === userId &&
+      // Check if friendRequests is an array and find if there's a match
+      !(
+        Array.isArray(theUser.friendRequests) &&
+        theUser.friendRequests.find((req) => req.requesterId === userId)
+      ) &&
+      !(Array.isArray(theUser.friends) && theUser.friends.includes(userId)) &&
+      !(
+        Array.isArray(friendRequests) &&
+        theUser !== null &&
+        friendRequests.find((req) => req.requesterId === theUser?.userId)
+      ) ? (
+        <AddUserIcon />
       ) : (
-        <p>ass</p>
+        <DeleteUserIcon />
       )}
     </Button>
   );

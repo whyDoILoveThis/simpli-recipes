@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
@@ -9,11 +9,36 @@ import TransitionX from "./TransitionX";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropBtnRef = useRef<HTMLDivElement>(null);
+  const [triggerXTransition, setTriggerXTransition] = useState(false);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        dropBtnRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        !dropBtnRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+        setTriggerXTransition(false);
+      }
+    };
+
+    // Add event listener
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      // Clean up listener on unmount
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
-    <nav className=" z-50 fixed top-0 left-0 w-full flex justify-center items-center p-2 px-4 border-b bg-teal-500 bg-opacity-15 dark:bg-white dark:bg-opacity-15">
+    <nav className=" z-50 fixed top-0 left-0 w-screen flex justify-center items-center p-2 px-4 border-b bg-teal-500 bg-opacity-15 dark:bg-white dark:bg-opacity-15">
       <div className="z-50 w-full max-w-[800px] max-h-[44px] h-[44px] flex items-center justify-between">
         <Link
-          className="flex justify-center items-center font-bold 2xs:-translate-x-1 xsmest:translate-x-4"
+          className="flex justify-center items-center font-bold"
           href={"/feed"}
         >
           <Image width={40} height={10} src={logo} alt={"logo"} />
@@ -22,9 +47,10 @@ const Navbar = () => {
           </p>
         </Link>
         <div
+          ref={dropdownRef}
           className={`flex items-center gap-6 flex-col sm:flex-row ${
-            isOpen ? "visible absolute right-10 top-16" : "invisible"
-          }  sm:visible`}
+            isOpen ? "visible absolute right-10 top-16 w-fit" : "invisible w-0"
+          }  sm:visible sm:w-fit`}
         >
           <div
             className={`flex ${
@@ -51,13 +77,18 @@ const Navbar = () => {
           </div>
           {
             <div
+              ref={dropBtnRef}
               onClick={() => {
                 setIsOpen(!isOpen);
               }}
               className={`fixed -top-1 right-10 visible sm:opacity-0 sm:invisible `}
             >
               {" "}
-              <TransitionX bgColor="bg-slate-300" />
+              <TransitionX
+                triggerXTransition={triggerXTransition}
+                setTriggerXTransition={setTriggerXTransition}
+                bgColor="bg-slate-300"
+              />
             </div>
           }
         </div>

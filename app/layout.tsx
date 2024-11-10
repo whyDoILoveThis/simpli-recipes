@@ -11,6 +11,7 @@ import {
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import Navbar from "@/components/ui/Navbar";
+import { ConfirmProvider } from "@/components/ui/its-confirm-context";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -37,21 +38,23 @@ export default function RootLayout({
     <ClerkProvider>
       <html className="flex justify-center" lang="en">
         <body className="max-w-[800px] w-[800px] pt-14 flex flex-col">
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <SignedOut>
-              <SignInButton />
-            </SignedOut>
-            <SignedIn>
-              <Navbar />
-              <Toaster />
-            </SignedIn>
-            {children}
-          </ThemeProvider>
+          <ConfirmProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <SignedOut>
+                <SignInButton />
+              </SignedOut>
+              <SignedIn>
+                <Navbar />
+                <Toaster />
+              </SignedIn>
+              {children}
+            </ThemeProvider>
+          </ConfirmProvider>
         </body>
       </html>
     </ClerkProvider>

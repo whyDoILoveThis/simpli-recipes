@@ -95,22 +95,7 @@ const UserProfileTag = ({
       </p>
       {isOpen && (
         <div className="flex items-center gap-2">
-          {theUser.userId &&
-            userId &&
-            theUser.userId !== userId &&
-            // Check if friendRequests is an array and find if there's a match
-            !(
-              Array.isArray(theUser.friendRequests) &&
-              theUser.friendRequests.find((req) => req.requesterId === userId)
-            ) &&
-            !(
-              Array.isArray(theUser.friends) && theUser.friends.includes(userId)
-            ) &&
-            !(
-              Array.isArray(friendRequests) &&
-              theUser !== null &&
-              friendRequests.find((req) => req.requesterId === theUser?.userId)
-            ) && <AddUserButton theUser={theUser} />}
+          <AddUserButton theUser={theUser} />
 
           {isOpen && (
             <Link href={`/profile/${theUser.userId}`}>

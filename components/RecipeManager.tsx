@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import { useUserStore } from "@/hooks/useUserStore"; // Assuming this hook provides dbUser
 import { useAuth } from "@clerk/nextjs";
@@ -13,6 +14,7 @@ import { Button } from "./ui/button";
 import Popover from "./Popover";
 import Plus from "./icons/Plus";
 import RecipeCardListWithSearchFiltering from "./Feed/RecipeCardListWithSearchFiltering";
+import { useConfirm } from "./ui/its-confirm-context";
 
 export default function RecipeManager() {
   const { dbUser, refetchUser } = useUserStore();
@@ -22,6 +24,7 @@ export default function RecipeManager() {
   const [editing, setEditing] = useState(false);
   const [newRecipeData, setNewRecipeData] = useState<Partial<Recipe>>({});
   const [adding, setAdding] = useState(false); // State for adding recipes
+  const { customConfirm } = useConfirm();
 
   // Get the users recipes on render
   useEffect(() => {
@@ -115,9 +118,9 @@ export default function RecipeManager() {
     }
   };
 
-  const handleDeleteRecipe = async (recipeId: string) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this recipe?"
+  const handleDeleteRecipe = async (recipeId: string, recipeName: string) => {
+    const confirmed = await customConfirm(
+      `Are you sure you want to delete ${recipeName}?`
     );
     if (confirmed && dbUser?.userId) {
       await fbDeleteRecipe(dbUser.userId, recipeId);

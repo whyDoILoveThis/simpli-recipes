@@ -24,7 +24,7 @@ import LoaderSpinner from "./LoaderSpinner";
 interface Props {
   recipes: Recipe[];
   handleEditRecipe?: (recipe: Recipe) => void;
-  handleDeleteRecipe?: (recipeUid: string) => void;
+  handleDeleteRecipe?: (recipeUid: string, recipeName: string) => void;
 }
 
 const RecipeCardList = ({
@@ -59,9 +59,17 @@ const RecipeCardList = ({
               ${selectedRecipeIndex !== index && viewingRecipe && " invisible"}
               recipe-item relative border rounded-2xl overflow-hidden w-fit flex flex-col items-center`}
         >
+          {/* Recipe Buttons */}
+          <div
+            className={`absolute max-w-[245px] z-[1] left-0 p-2  ${
+              viewingRecipe && " z-lowest"
+            }`}
+          >
+            <UserProfileTag dbUserId={recipe.creatorUid} />
+          </div>
           <div
             className={`absolute right-2 top-2 z-10  ${
-              viewingRecipe && " z-[-99]"
+              viewingRecipe && " z-lowest"
             }`}
           >
             <Button
@@ -80,13 +88,7 @@ const RecipeCardList = ({
               <p>{recipe.timesFavorited ? recipe.timesFavorited : 0}</p>
             </Button>
           </div>
-          <div
-            className={`absolute min-w-[245px] z-[1] left-0 p-2  ${
-              viewingRecipe && " z-[-99]"
-            }`}
-          >
-            <UserProfileTag dbUserId={recipe.creatorUid} />
-          </div>
+          {/** Recipe Card */}
           <article
             className=" w-full h-full relative cursor-pointer"
             onClick={() => {
@@ -103,10 +105,12 @@ const RecipeCardList = ({
                 className="w-full"
               />
             )}
-            <h2 className="text-center font-bold text-slate-100 shadow-bottom w-full absolute bottom-0">
+            <h2 className="absolute bottom-0 w-full text-center font-bold text-slate-100 shadow-bottom ">
               {recipe.title}
             </h2>
           </article>
+
+          {/** Recipe Open Pop*/}
           {selectedRecipeIndex === index && (
             <Popover zIndex="59">
               <div className="flex flex-col items-center gap-2 absolute right-2 top-4">
@@ -130,7 +134,8 @@ const RecipeCardList = ({
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() =>
-                          recipe.uid && handleDeleteRecipe(recipe.uid)
+                          recipe.uid &&
+                          handleDeleteRecipe(recipe.uid, recipe.title)
                         }
                         className="bg-red-700 dark:hover:bg-red-900"
                       >

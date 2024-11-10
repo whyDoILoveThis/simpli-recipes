@@ -8,9 +8,7 @@ const MyFavorites = () => {
 
   return (
     <div>
-      <h2 className="text-center underline underline-offset-8 decoration-1 mb-6 mt-8">
-        My Favorites
-      </h2>
+      <h2 className="text-center font-bold mb-6 mt-8">My Favorites</h2>
       <div className="flex justify-center">
         <RecipeCardListWithSearchFiltering filterFavorites={true} />
       </div>

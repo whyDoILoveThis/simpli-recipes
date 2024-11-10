@@ -95,9 +95,16 @@ body *::-webkit-scrollbar-thumb
 	background-color: #757575;
 }
 
+.zz-top {
+  z-index: 9999;
+}
 
 .z-99 {
   z-index: 99;
+}
+
+.z-lowest {
+  z-index: -9999;
 }
 
 
@@ -113,6 +120,10 @@ box-shadow: -1px 3px 40px -20px rgba(0,166,255,1);
 background: linear-gradient(360deg, rgba(0,0,0,1) 18%, rgba(58,55,68,0) 100%);
 }
 
+.text-shadow {
+  text-shadow: -1px -1px 1px rgba(255,255,255,.1), 1px 1px 1px rgba(0,0,0,.5);
+}
+
 
 .drop-item {
   @apply
@@ -125,7 +136,7 @@ background: linear-gradient(360deg, rgba(0,0,0,1) 18%, rgba(58,55,68,0) 100%);
   text-nowrap
 }
 
-
+/*Buttons*/
 .btn {
     @apply
     text-slate-600
@@ -146,15 +157,31 @@ background: linear-gradient(360deg, rgba(0,0,0,1) 18%, rgba(58,55,68,0) 100%);
     selection:bg-transparent
   }
 
-  .btn-round {
+  .btn-ghost {
     @apply
-    max-w-[35px]
-    max-h-[35px] 
+    w-full
+    border-none
+    bg-transparent
+    dark:bg-transparent
+    dark:hover:bg-white
+    dark:hover:bg-opacity-10
+  }
+
+  .btn-round {
+    --btn-size: 35px;
+    @apply
+    w-[var(--btn-size)]
+    h-[var(--btn-size)] 
+    max-w-[var(--btn-size)]
+    max-h-[var(--btn-size)] 
+    min-w-[var(--btn-size)]
+    min-h-[var(--btn-size)] 
     p-0
     flex
     justify-center
     items-center
   }
+
 
 .no-scrollbar::-webkit-scrollbar-track, .no-scrollbar *::-webkit-scrollbar-track
 {
@@ -226,11 +253,7 @@ h2 {
 }
 
 
-.btn-round {
-  @apply
-  w-[35px]
-  h-[35px]
-}
+
 
 /* CSS for smooth scale transition */
 .dropdown-container {

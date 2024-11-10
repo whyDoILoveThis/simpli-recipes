@@ -1,8 +1,8 @@
-import { TiUserAddOutline } from "react-icons/ti";
+import { AiOutlineUserAdd } from "react-icons/ai";
 import React from "react";
 
-const AddUserButton = () => {
-  return <TiUserAddOutline className="text-xl" />;
+const AddUserIcon = () => {
+  return <AiOutlineUserAdd className="text-xl" />;
 };
 
-export default AddUserButton;
+export default AddUserIcon;

@@ -29,6 +29,10 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Timestamp } from "firebase/firestore";
+import ItsDropdown from "../ui/its-dropdown";
+import { BsThreeDots } from "react-icons/bs";
+import ChevronsUpDown from "../icons/ChevronsUpDown";
+import CloseButton from "../icons/CloseButton";
 
 interface Props {
   filterFriends?: boolean;
@@ -59,6 +63,16 @@ const FriendsPosts = ({
 
   const [categoryFilter, setCategoryFilter] = useState<string>(""); // New state for category filtering
   const [sortOrder, setSortOrder] = useState<string>(""); // New state for sorting
+
+  const breakfastCategorys = [
+    "Breakfast",
+    "Lunch",
+    "Dinner",
+    "Snack",
+    "Beverage",
+    "other",
+  ];
+  const possibleSortOrders = ["Quickest", "Slowest", "Newest", "Oldest"];
 
   const recipesPerPage = 10; // Define how many recipes per page
 
@@ -212,51 +226,60 @@ const FriendsPosts = ({
           {showSearch && (
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
-                <DropdownMenu>
-                  <MyDropdownTrigger />
-                  <DropdownMenuContent className="flex flex-col gap-1">
-                    <DropdownMenuItem>
-                      <Select
-                        defaultValue="All Categorys"
-                        value={categoryFilter} // Use state for category selection
-                        onValueChange={(value) => setCategoryFilter(value)}
+                <ItsDropdown
+                  menuClassNames="-translate-x-8"
+                  theButton={
+                    <Button className="p-0 w-[30px] h-[30px]">
+                      <BsThreeDots className="text-slate-400" />
+                    </Button>
+                  }
+                >
+                  <ItsDropdown
+                    theButton={
+                      <button className="btn btn-ghost text-shadow flex gap-1 items-center">
+                        Category
+                        <span className="text-slate-300 text-sm text-opacity-60">
+                          <ChevronsUpDown />
+                        </span>
+                      </button>
+                    }
+                  >
+                    {breakfastCategorys.map((category, index) => (
+                      <li
+                        key={index}
+                        className="btn btn-ghost"
+                        onClick={() => {
+                          setCategoryFilter(category);
+                        }}
                       >
-                        <SelectTrigger className="w-fit focus:ring-0 border-none">
-                          <SelectValue placeholder="Category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="All Categorys">
-                            All Categories
-                          </SelectItem>{" "}
-                          <SelectItem value="Breakfast">Breakfast</SelectItem>
-                          <SelectItem value="Lunch">Lunch</SelectItem>
-                          <SelectItem value="Dinner">Dinner</SelectItem>
-                          <SelectItem value="Dessert">Dessert</SelectItem>
-                          <SelectItem value="Snack">Snack</SelectItem>
-                          <SelectItem value="Beverage">Beverage</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setSortOrder("Quickest")}>
-                      <Select
-                        defaultValue="none"
-                        value={sortOrder} // Use state for category selection
-                        onValueChange={(value) => setSortOrder(value)}
+                        {category}
+                      </li>
+                    ))}
+                  </ItsDropdown>
+                  <ItsDropdown
+                    theButton={
+                      <button className="btn btn-ghost text-nowrap text-shadow flex gap-1 items-center">
+                        Sort Order
+                        <span className="text-slate-300 text-sm text-opacity-50">
+                          <ChevronsUpDown />
+                        </span>
+                      </button>
+                    }
+                  >
+                    {possibleSortOrders.map((sortOrder, index) => (
+                      <li
+                        key={index}
+                        className="btn btn-ghost"
+                        onClick={() => {
+                          setSortOrder(sortOrder);
+                        }}
                       >
-                        <SelectTrigger className="w-fit focus:ring-0 border-none">
-                          <SelectValue placeholder="Sort Order" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Quickest">Quickest</SelectItem>
-                          <SelectItem value="Slowest">Slowest</SelectItem>
-                          <SelectItem value="Newest">Newest</SelectItem>
-                          <SelectItem value="Oldest">Oldest</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                        {sortOrder}
+                      </li>
+                    ))}
+                  </ItsDropdown>
+                </ItsDropdown>
+
                 <button
                   className="border rounded-full p-1 px-2 text-xs"
                   onClick={() => {
@@ -280,9 +303,9 @@ const FriendsPosts = ({
                 onClick={() => {
                   setCategoryFilter("");
                 }}
-                className="border rounded-full px-2 font-bold"
+                className="text-xl"
               >
-                x
+                <CloseButton />
               </button>
             </div>
           )}
@@ -293,9 +316,9 @@ const FriendsPosts = ({
                 onClick={() => {
                   setSortOrder("");
                 }}
-                className="border rounded-full px-2 font-bold"
+                className="text-xl"
               >
-                x
+                <CloseButton />
               </button>
             </div>
           )}
