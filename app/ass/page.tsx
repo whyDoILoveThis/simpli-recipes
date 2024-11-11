@@ -1,6 +1,6 @@
 "use client";
 import ObjectDetection from "@/components/AI/ObjectDetection";
-import OCRUpload from "@/components/AI/OcrUpload";
+import OcrUpload from "@/components/AI/OCRUpload";
 import ChevronsUpDown from "@/components/icons/ChevronsUpDown";
 import { Button } from "@/components/ui/button";
 import ItsDropdown from "@/components/ui/its-dropdown";
@@ -10,13 +10,13 @@ import { BsThreeDots } from "react-icons/bs";
 
 const page = () => {
   return (
-    <div className="pt-44">
+    <div className="pt-20">
       {/* <TransitionX /> */}
 
       {/* <ObjectDetection /> */}
       <div>
         <h1 className="text-4xl text-center my-4">OCR Text Recognition App</h1>
-        <OCRUpload />
+        <OcrUpload />
       </div>
 
       {/* <ItsDropdown

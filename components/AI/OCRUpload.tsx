@@ -4,7 +4,7 @@
 
 import { useState } from "react";
 
-export default function OCRUpload() {
+export default function OcrUpload() {
   const [image, setImage] = useState<File | null>(null);
   const [ocrResult, setOcrResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
