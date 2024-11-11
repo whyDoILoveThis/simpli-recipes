@@ -41,7 +41,7 @@ interface Props {
   filterFavorites?: boolean;
   theUserUid?: string;
   handleEditRecipe?: (recipe: Recipe) => void;
-  handleDeleteRecipe?: (recipeUid: string) => void;
+  handleDeleteRecipe?: (recipeUid: string, recipeName: string) => Promise<void>;
 }
 const FriendsPosts = ({
   filterFriends = false,
