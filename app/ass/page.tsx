@@ -1,5 +1,4 @@
 "use client";
-import ObjectDetection from "@/components/AI/ObjectDetection";
 import OcrRecognition from "@/components/AI/OcrRecognition";
 import ChevronsUpDown from "@/components/icons/ChevronsUpDown";
 import { Button } from "@/components/ui/button";
