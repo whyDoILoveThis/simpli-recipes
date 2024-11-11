@@ -1,12 +1,12 @@
 "use client";
 import ObjectDetection from "@/components/AI/ObjectDetection";
-import OcrUpload from "@/components/AI/OCRUpload";
 import ChevronsUpDown from "@/components/icons/ChevronsUpDown";
 import { Button } from "@/components/ui/button";
 import ItsDropdown from "@/components/ui/its-dropdown";
 import TransitionX from "@/components/ui/TransitionX";
 import React from "react";
 import { BsThreeDots } from "react-icons/bs";
+import OcrUpload from "@/components/AI/OcrUpload";
 
 const page = () => {
   return (
