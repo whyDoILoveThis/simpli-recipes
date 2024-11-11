@@ -1,12 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Textarea } from "../ui/textarea";
 import SendIcon from "../icons/SendIcon";
+import { useUserStore } from "@/hooks/useUserStore";
+import { useAuth, useUser } from "@clerk/nextjs";
+import { v4 } from "uuid";
+import { fbAddRecipe } from "@/firebase/fbAddRecipe";
+
+interface Ingredient {
+  name: string;
+  quantity: string;
+  unit: string;
+}
+
+interface Step {
+  step_number: number;
+  instruction: string;
+}
 
 const RecipeInputForm = () => {
   const [prompt, setPrompt] = useState("");
   const [recipe, setRecipe] = useState<any | null>(null);
+  const { dbUser, fetchUser } = useUserStore();
+  const { user } = useUser();
+  const { userId } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +46,55 @@ const RecipeInputForm = () => {
     } catch (error) {
       console.error("❌ Error:", error);
       alert("An error occurred while fetching the recipe.");
+    }
+  };
+
+  useEffect(() => {
+    if (user && userId) {
+      fetchUser(userId, user);
+    }
+  }, []);
+
+  // 🛠️ Ensure no empty submission
+  const handleAddRecipe = async (e: React.FormEvent) => {
+    // Define the types for the recipe components
+
+    console.log(dbUser);
+    e.preventDefault();
+
+    if (dbUser?.userId && userId) {
+      // 1️⃣ Extract steps as an array of instructions
+      const stepInstructions: string[] = recipe.steps.map(
+        (step: Step) => step.instruction
+      );
+
+      // 2️⃣ Combine ingredient properties into a single string
+      const formattedIngredients: string[] = recipe.ingredients.map(
+        (ingredient: Ingredient) => {
+          return `${ingredient.quantity} ${ingredient.unit} ${ingredient.name}`;
+        }
+      );
+
+      const newRecipe: Recipe = {
+        uid: v4(), // Create a unique ID for the new recipe
+        creatorUid: userId,
+        title: recipe.title || "",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        notes: recipe.notes || "",
+        photoUrl: recipe.photoUrl || "",
+        category: recipe.category || "other",
+        steps: stepInstructions || [],
+        ingredients: formattedIngredients || [],
+        totalTime: recipe.totalCookTimeInMinutes || "",
+        totalTimeTemp: recipe.totalTimeTemp || 0,
+        comments: [],
+      };
+      console.log(newRecipe);
+
+      await fbAddRecipe(dbUser.userId, newRecipe);
+    } else {
+      alert("missing userid");
     }
   };
 
@@ -67,6 +134,7 @@ const RecipeInputForm = () => {
           </ol>
           <h3>Notes:</h3>
           <p>{recipe.notes}</p>
+          <button onClick={handleAddRecipe}>Save Recipe</button>
         </div>
       )}
     </div>

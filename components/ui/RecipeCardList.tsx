@@ -56,7 +56,7 @@ const RecipeCardList = ({
         <div
           key={recipe.uid}
           className={`
-              ${selectedRecipeIndex !== index && viewingRecipe && " invisible"}
+              ${selectedRecipeIndex !== index && viewingRecipe && "invisible"}
               recipe-item relative border rounded-2xl overflow-hidden w-fit flex flex-col items-center`}
         >
           {/* Recipe Buttons */}
@@ -90,7 +90,7 @@ const RecipeCardList = ({
           </div>
           {/** Recipe Card */}
           <article
-            className=" w-full h-full relative cursor-pointer"
+            className=" w-full h-full min-w-[280px] min-h-[150px] relative cursor-pointer"
             onClick={() => {
               setSelectedRecipeIndex(index);
               setViewingRecipe(true);

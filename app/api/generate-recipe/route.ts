@@ -41,12 +41,12 @@ export async function POST(request: Request) {
                   items: {
                     type: 'object',
                     properties: {
-                      step_number: { type: 'integer' },
                       instruction: { type: 'string' },
                     },
                     required: ['step_number', 'instruction'],
                   },
                 },
+                totalCookTimeInMinutes: { type: 'string' },
                 notes: { type: 'string' },
               },
               required: ['title', 'ingredients', 'steps'],

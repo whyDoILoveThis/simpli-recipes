@@ -69,6 +69,12 @@ const Navbar = () => {
               <li className="text-slate-200 hover:text-orange-300 font-bold">
                 <Link href={"/create"}>Create</Link>
               </li>
+              <li className="text-slate-200 hover:text-orange-300 font-bold">
+                <Link href={"/ai"}>ai</Link>
+              </li>
+              <li className="text-slate-200 hover:text-orange-300 font-bold">
+                <Link href={"/ass"}>ass</Link>
+              </li>
             </ul>
             <div className="flex gap-2">
               <UserButton />
