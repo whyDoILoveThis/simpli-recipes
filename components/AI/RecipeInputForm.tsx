@@ -7,6 +7,11 @@ import { useUserStore } from "@/hooks/useUserStore";
 import { useAuth, useUser } from "@clerk/nextjs";
 import { v4 } from "uuid";
 import { fbAddRecipe } from "@/firebase/fbAddRecipe";
+import LoaderSpinner from "../ui/LoaderSpinner";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "../ui/button";
+import SaveIcon from "../icons/SaveIcon";
+import fetchRecipeImage from "@/lib/fetchRecipeImage";
 
 interface Ingredient {
   name: string;
@@ -20,14 +25,23 @@ interface Step {
 }
 
 const RecipeInputForm = () => {
+  const { toast } = useToast();
   const [prompt, setPrompt] = useState("");
   const [recipe, setRecipe] = useState<any | null>(null);
+  const [loadingAiRes, setLoadingAiRes] = useState(false);
+  const [savingRecipe, setSavingRecipe] = useState(false);
+  const [recipeSaved, setRecipeSaved] = useState(false);
+  const [diableSendBtn, setDisableSendBtn] = useState(false);
+  const [imgSearchIndex, setImgSearchIndex] = useState(1);
+  const [imageUrl, setImageUrl] = useState("");
   const { dbUser, fetchUser } = useUserStore();
   const { user } = useUser();
   const { userId } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setDisableSendBtn(true);
+    if (savingRecipe) return;
     if (!prompt.trim()) {
       alert("Please enter a recipe idea.");
       return;
@@ -43,11 +57,24 @@ const RecipeInputForm = () => {
       });
       const data = await response.json();
       setRecipe(data.recipe);
+      setLoadingAiRes(false);
+      setDisableSendBtn(false);
     } catch (error) {
+      setLoadingAiRes(false);
+      setDisableSendBtn(false);
       console.error("❌ Error:", error);
       alert("An error occurred while fetching the recipe.");
     }
   };
+
+  useEffect(() => {
+    const g = async () => {
+      if (recipe.title) {
+        setImageUrl(await fetchRecipeImage(recipe.title, imgSearchIndex));
+      }
+    };
+    g();
+  }, [recipe]);
 
   useEffect(() => {
     if (user && userId) {
@@ -55,12 +82,19 @@ const RecipeInputForm = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (user && userId) {
+      fetchUser(userId, user);
+    }
+  }, [user, userId]);
+
   // 🛠️ Ensure no empty submission
   const handleAddRecipe = async (e: React.FormEvent) => {
     // Define the types for the recipe components
 
     console.log(dbUser);
     e.preventDefault();
+    if (recipeSaved) return;
 
     if (dbUser?.userId && userId) {
       // 1️⃣ Extract steps as an array of instructions
@@ -75,6 +109,8 @@ const RecipeInputForm = () => {
         }
       );
 
+      console.log(imageUrl);
+
       const newRecipe: Recipe = {
         uid: v4(), // Create a unique ID for the new recipe
         creatorUid: userId,
@@ -82,7 +118,7 @@ const RecipeInputForm = () => {
         createdAt: new Date(),
         updatedAt: new Date(),
         notes: recipe.notes || "",
-        photoUrl: recipe.photoUrl || "",
+        photoUrl: imageUrl || "",
         category: recipe.category || "other",
         steps: stepInstructions || [],
         ingredients: formattedIngredients || [],
@@ -93,48 +129,114 @@ const RecipeInputForm = () => {
       console.log(newRecipe);
 
       await fbAddRecipe(dbUser.userId, newRecipe);
+      setSavingRecipe(false);
+      setRecipeSaved(true);
+      toast({
+        title: "Recipe Saved 🙏",
+        variant: "green",
+      });
     } else {
       alert("missing userid");
+      setRecipeSaved(false);
+      setSavingRecipe(false);
     }
+  };
+
+  const handleChangeImg = async () => {
+    setImageUrl(await fetchRecipeImage(recipe.title, imgSearchIndex + 1));
+    setImgSearchIndex(imgSearchIndex + 1);
   };
 
   console.log(recipe);
 
   return (
-    <div>
-      <form className="flex gap-1 items-end m-4" onSubmit={handleSubmit}>
-        <Textarea
-          className="text-xl font-bold placeholder:text-opacity-40"
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Enter your recipe idea here..."
-        ></Textarea>
-        <button className="btn btn-ghost btn-round text-2xl" type="submit">
-          <SendIcon />
-        </button>
+    <div className="p-4 pb-8">
+      <form
+        className="flex gap-1 items-end m-4"
+        onSubmit={(e) => {
+          handleSubmit(e);
+        }}
+      >
+        <div className="w-full flex items-end p-2 rounded-2xl bg-black bg-opacity-15 dark:bg-white dark:bg-opacity-10">
+          <textarea
+            className="text-xl min-h-[150px] font-bold focus:outline-none placeholder:text-opacity-40 w-full bg-transparent"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="Enter your recipe idea here..."
+          ></textarea>
+          <button
+            disabled={diableSendBtn}
+            style={{ cursor: `${loadingAiRes ? "default" : "pointer"}` }}
+            className={`btn btn-ghost btn-round text-2xl`}
+            onClick={() => {
+              setLoadingAiRes(true);
+              setSavingRecipe(false);
+              setRecipeSaved(false);
+            }}
+            type="submit"
+          >
+            {loadingAiRes ? <LoaderSpinner /> : <SendIcon />}
+          </button>
+        </div>
       </form>
-      {recipe && (
-        <div>
-          <h2>{recipe.title}</h2>
-          <h3>Ingredients:</h3>
-          <ul>
-            {recipe.ingredients.map((ing: any, index: number) => (
-              <li key={index}>
-                {ing.quantity} {ing.unit} {ing.name}
-              </li>
-            ))}
-          </ul>
-          <h3>Steps:</h3>
-          <ol>
-            {recipe.steps.map((step: any, index: number) => (
-              <li key={index}>
-                <b>Step {index + 1}</b> <br /> {step.instruction}
-              </li>
-            ))}
-          </ol>
-          <h3>Notes:</h3>
-          <p>{recipe.notes}</p>
-          <button onClick={handleAddRecipe}>Save Recipe</button>
+      {recipe && !loadingAiRes && (
+        <div className="flex flex-col items-center">
+          <form
+            className="max-w-[350px] bg-black bg-opacity-20 dark:bg-white dark:bg-opacity-10 p-2 rounded-xl flex flex-col justify-end"
+            onSubmit={handleAddRecipe}
+          >
+            {
+              <div>
+                <img src={imageUrl && imageUrl} alt="stock image" />
+                <button type="button" onClick={handleChangeImg}>
+                  🔃
+                </button>
+              </div>
+            }
+            <h2 className="text-center font-bold">{recipe.title}</h2>
+            <ul className="mt-4 p-2 bg-black bg-opacity-15 dark:bg-white dark:bg-opacity-10 rounded-lg">
+              <h3 className="font-bold text-lg">Ingredients:</h3>
+              {recipe.ingredients.map((ing: any, index: number) => (
+                <li key={index}>
+                  {ing.quantity} {ing.unit} {ing.name}
+                </li>
+              ))}
+            </ul>
+            <ol className="flex flex-col gap-6 mt-4 p-4 bg-black bg-opacity-15 dark:bg-white dark:bg-opacity-10 rounded-lg">
+              {recipe.steps.map((step: any, index: number) => (
+                <li key={index}>
+                  <b>Step{index + 1}</b> <br /> {step.instruction}
+                </li>
+              ))}
+            </ol>
+            {recipe.notes && (
+              <div>
+                <h3 className="text-lg font-bold">Notes:</h3>
+                <p>{recipe.notes}</p>
+              </div>
+            )}
+            <Button
+              variant={"green"}
+              type="submit"
+              className={`m-4 ${
+                savingRecipe || (recipeSaved && "cursor-default")
+              }`}
+              onClick={() => {
+                !recipeSaved && setSavingRecipe(true);
+              }}
+            >
+              {savingRecipe ? (
+                <LoaderSpinner />
+              ) : recipeSaved && !savingRecipe ? (
+                "Saved ✔"
+              ) : (
+                <div className="flex items-center gap-1 text-xl">
+                  <SaveIcon />
+                  Save
+                </div>
+              )}
+            </Button>
+          </form>
         </div>
       )}
     </div>
