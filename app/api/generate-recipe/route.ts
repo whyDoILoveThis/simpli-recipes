@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         model: 'gpt-3.5-turbo',
-        messages: [{ role: 'user', content: prompt }],
+        messages: [{ role: 'user', content: `Make a recipe out of this >>>${prompt}<<<; totalCookTime should be like "40m" or "1h 25m"; Choose a search term that best represents this recipe to be used for an image search on the gptSearchTerm, avoid words like "recipe" and describe the food created by the recipe as best as possible with a food name, it should be simple yet descriptive, consider using the title of the recipe.; For the category it should be one of the following, breakfast, lunch, dinner, snack, beverage, dessert, or other. It must be one of those do not set a category to anything other than one of the ones i just told you about.;` }],
         functions: [
           {
             name: 'recipe_output',
@@ -46,8 +46,10 @@ export async function POST(request: Request) {
                     required: ['step_number', 'instruction'],
                   },
                 },
-                totalCookTimeInMinutes: { type: 'string' },
+                totalCookTime: { type: 'string' },
+                category: { type: 'string' },
                 notes: { type: 'string' },
+                searchTerm: { type: 'string' },
               },
               required: ['title', 'ingredients', 'steps'],
             },

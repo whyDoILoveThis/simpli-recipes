@@ -51,7 +51,7 @@ const RecipeCardList = ({
   };
 
   return (
-    <div className="grid sm:grid-cols-2 items-center p-2 gap-4">
+    <div className="grid sm:grid-cols-2 place-items-center p-2 gap-4">
       {recipes.map((recipe, index) => (
         <div
           key={recipe.uid}

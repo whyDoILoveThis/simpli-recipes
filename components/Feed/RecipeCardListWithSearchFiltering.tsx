@@ -33,6 +33,7 @@ import ItsDropdown from "../ui/its-dropdown";
 import { BsThreeDots } from "react-icons/bs";
 import ChevronsUpDown from "../icons/ChevronsUpDown";
 import CloseButton from "../icons/CloseButton";
+import RecipeCardListSkeleton from "./RecipeCardListSkeleton";
 
 interface Props {
   filterFriends?: boolean;
@@ -334,8 +335,9 @@ const FriendsPosts = ({
             handleDeleteRecipe={handleDeleteRecipe}
           />
         ) : (
-          <p>No recipes found.</p>
+          <p>pop</p>
         )}
+        <RecipeCardListSkeleton />
       </div>
 
       {/* Pagination Component */}

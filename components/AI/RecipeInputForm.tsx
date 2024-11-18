@@ -12,6 +12,21 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "../ui/button";
 import SaveIcon from "../icons/SaveIcon";
 import fetchRecipeImage from "@/lib/fetchRecipeImage";
+import ImageCarousel from "./ImageCarousel";
+import UnsplashLogo from "../icons/UnsplashLogo";
+import GoogleColorLogo from "../icons/GoogleColorLogo";
+import GoogleSolidLogo from "../icons/GoogleSolidLogo";
+import RecipeCardBubble from "../ui/RecipeCardBubble";
+import Hourglass from "../icons/Hourglass";
+import Breakfast from "../icons/category icons/Breakfast";
+import Lunch from "../icons/category icons/Lunch";
+import Dinner from "../icons/category icons/Dinner";
+import Dessert from "../icons/category icons/Dessert";
+import Snack from "../icons/category icons/Snack";
+import Beverage from "../icons/category icons/Beverage";
+import Other from "../icons/category icons/Other";
+import AiTextarea from "./AiTextarea";
+import OcrRecognition from "./OcrRecognition";
 
 interface Ingredient {
   name: string;
@@ -27,13 +42,22 @@ interface Step {
 const RecipeInputForm = () => {
   const { toast } = useToast();
   const [prompt, setPrompt] = useState("");
-  const [recipe, setRecipe] = useState<any | null>(null);
+  const [recipe, setRecipe] = useState<any | null>({
+    title: "Recipe Name",
+    ingredients: [],
+    steps: [],
+  });
+  const [usingOcr, setUsingOcr] = useState(false);
+  const [ocrResult, setOcrResult] = useState("");
   const [loadingAiRes, setLoadingAiRes] = useState(false);
   const [savingRecipe, setSavingRecipe] = useState(false);
   const [recipeSaved, setRecipeSaved] = useState(false);
-  const [diableSendBtn, setDisableSendBtn] = useState(false);
+  const [disableSendBtn, setDisableSendBtn] = useState(false);
+  const [usingUnsplash, setUsingUnsplash] = useState(true);
   const [imgSearchIndex, setImgSearchIndex] = useState(1);
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [currentImgUrl, setCurrentImgUrl] = useState("");
+  const [googleImgUrl, setGoogleImgUrl] = useState("");
   const { dbUser, fetchUser } = useUserStore();
   const { user } = useUser();
   const { userId } = useAuth();
@@ -46,7 +70,7 @@ const RecipeInputForm = () => {
       alert("Please enter a recipe idea.");
       return;
     }
-
+    await handleUnsplashSearch();
     try {
       const response = await fetch("/api/generate-recipe", {
         method: "POST",
@@ -67,14 +91,15 @@ const RecipeInputForm = () => {
     }
   };
 
+  const handleUnsplashSearch = async () => {
+    if (recipe.title !== null && recipe.title) {
+      setImageUrls(await fetchRecipeImage(recipe.searchTerm));
+    }
+  };
+
   useEffect(() => {
-    const g = async () => {
-      if (recipe.title) {
-        setImageUrl(await fetchRecipeImage(recipe.title, imgSearchIndex));
-      }
-    };
-    g();
-  }, [recipe]);
+    setCurrentImgUrl(imageUrls[0]);
+  }, [imageUrls]);
 
   useEffect(() => {
     if (user && userId) {
@@ -109,7 +134,7 @@ const RecipeInputForm = () => {
         }
       );
 
-      console.log(imageUrl);
+      console.log(imageUrls);
 
       const newRecipe: Recipe = {
         uid: v4(), // Create a unique ID for the new recipe
@@ -118,11 +143,15 @@ const RecipeInputForm = () => {
         createdAt: new Date(),
         updatedAt: new Date(),
         notes: recipe.notes || "",
-        photoUrl: imageUrl || "",
+        photoUrl: usingUnsplash
+          ? currentImgUrl
+          : !usingUnsplash
+          ? googleImgUrl
+          : "",
         category: recipe.category || "other",
         steps: stepInstructions || [],
         ingredients: formattedIngredients || [],
-        totalTime: recipe.totalCookTimeInMinutes || "",
+        totalTime: recipe.totalCookTime || "",
         totalTimeTemp: recipe.totalTimeTemp || 0,
         comments: [],
       };
@@ -142,42 +171,84 @@ const RecipeInputForm = () => {
     }
   };
 
-  const handleChangeImg = async () => {
-    setImageUrl(await fetchRecipeImage(recipe.title, imgSearchIndex + 1));
-    setImgSearchIndex(imgSearchIndex + 1);
+  console.log(googleImgUrl);
+
+  useEffect(() => {
+    setPrompt(ocrResult);
+  }, [ocrResult]);
+
+  useEffect(() => {
+    setCurrentImgUrl(imageUrls[imgSearchIndex]);
+  }, [imgSearchIndex]);
+
+  const handleNextImg = async () => {
+    setImgSearchIndex((prevIndex) => (prevIndex + 1) % imageUrls.length);
+    console.log(currentImgUrl);
+  };
+  const handlePrevImg = async () => {
+    setImgSearchIndex(
+      (prevIndex) => (prevIndex - 1 + imageUrls.length) % imageUrls.length
+    );
   };
 
-  console.log(recipe);
+  console.log(imageUrls);
 
   return (
     <div className="p-4 pb-8">
+      <div className="flex gap-2 justify-center">
+        <button
+          type="button"
+          onClick={() => {
+            setUsingOcr(false);
+            setOcrResult("");
+          }}
+          className={`btn ${!usingOcr && "btn-selected"}`}
+        >
+          Textarea
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setUsingOcr(true);
+          }}
+          className={`btn ${usingOcr && "btn-selected"}`}
+        >
+          OCR
+        </button>
+      </div>
       <form
         className="flex gap-1 items-end m-4"
         onSubmit={(e) => {
           handleSubmit(e);
         }}
       >
-        <div className="w-full flex items-end p-2 rounded-2xl bg-black bg-opacity-15 dark:bg-white dark:bg-opacity-10">
-          <textarea
-            className="text-xl min-h-[150px] font-bold focus:outline-none placeholder:text-opacity-40 w-full bg-transparent"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Enter your recipe idea here..."
-          ></textarea>
-          <button
-            disabled={diableSendBtn}
-            style={{ cursor: `${loadingAiRes ? "default" : "pointer"}` }}
-            className={`btn btn-ghost btn-round text-2xl`}
-            onClick={() => {
-              setLoadingAiRes(true);
-              setSavingRecipe(false);
-              setRecipeSaved(false);
-            }}
-            type="submit"
-          >
-            {loadingAiRes ? <LoaderSpinner /> : <SendIcon />}
-          </button>
-        </div>
+        {usingOcr && (
+          <div className="w-full">
+            <OcrRecognition ocrResult={ocrResult} setOcrResult={setOcrResult} />
+            {ocrResult && (
+              <AiTextarea
+                prompt={prompt}
+                setPrompt={setPrompt}
+                disableSendBtn={disableSendBtn}
+                loadingAiRes={loadingAiRes}
+                setLoadingAiRes={setLoadingAiRes}
+                setSavingRecipe={setSavingRecipe}
+                setRecipeSaved={setRecipeSaved}
+              />
+            )}
+          </div>
+        )}
+        {!usingOcr && ocrResult === "" && (
+          <AiTextarea
+            prompt={prompt}
+            setPrompt={setPrompt}
+            disableSendBtn={disableSendBtn}
+            loadingAiRes={loadingAiRes}
+            setLoadingAiRes={setLoadingAiRes}
+            setSavingRecipe={setSavingRecipe}
+            setRecipeSaved={setRecipeSaved}
+          />
+        )}
       </form>
       {recipe && !loadingAiRes && (
         <div className="flex flex-col items-center">
@@ -185,17 +256,118 @@ const RecipeInputForm = () => {
             className="max-w-[350px] bg-black bg-opacity-20 dark:bg-white dark:bg-opacity-10 p-2 rounded-xl flex flex-col justify-end"
             onSubmit={handleAddRecipe}
           >
-            {
-              <div>
-                <img src={imageUrl && imageUrl} alt="stock image" />
-                <button type="button" onClick={handleChangeImg}>
-                  🔃
-                </button>
+            {!recipeSaved && (
+              <div className="flex flex-col mb-6">
+                <span className="flex flex-col gap-1 items-center">
+                  <p>
+                    <b>Search image with </b>
+                  </p>
+                  <span className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      className={`flex items-center btn ${
+                        usingUnsplash && "btn-unsplash"
+                      } font-bold`}
+                      onClick={() => {
+                        setUsingUnsplash(true);
+                        imageUrls.length <= 1 &&
+                          imageUrls[0] === "" &&
+                          handleUnsplashSearch();
+                      }}
+                    >
+                      <span className="-translate-y-[2px]">
+                        <UnsplashLogo />
+                      </span>
+                      Unsplash
+                    </button>
+                    or
+                    <button
+                      type="button"
+                      className={`flex items-center btn ${
+                        !usingUnsplash && "btn-google"
+                      } font-bold`}
+                      onClick={() => {
+                        setUsingUnsplash(false);
+                      }}
+                    >
+                      {!usingUnsplash ? (
+                        <GoogleColorLogo />
+                      ) : (
+                        <GoogleSolidLogo />
+                      )}
+                      oogle
+                    </button>
+                  </span>
+                </span>
               </div>
-            }
-            <h2 className="text-center font-bold">{recipe.title}</h2>
+            )}
+            {recipe.searchTerm && recipe.SearchTerm !== null && (
+              <p>Img Search Term - {recipe.searchTerm}</p>
+            )}
+            {imageUrls &&
+            !recipeSaved &&
+            usingUnsplash &&
+            recipe.title !== "Recipe Name" ? (
+              <div>
+                <span className="flex gap-2 mb-1">
+                  <button
+                    type="button"
+                    onClick={handlePrevImg}
+                    className="carousel-btn btn btn-round"
+                  >
+                    ◀
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleNextImg}
+                    className="carousel-btn btn btn-round"
+                  >
+                    ▶
+                  </button>
+                </span>
+                <img src={currentImgUrl} alt="unsplash stock image" />
+              </div>
+            ) : (
+              recipe.title &&
+              recipe.title !== null &&
+              recipe.title !== "Recipe Name" &&
+              !usingUnsplash && (
+                <ImageCarousel
+                  recipeSaved={recipeSaved}
+                  theImgUrl={googleImgUrl}
+                  setTheImgUrl={setGoogleImgUrl}
+                  theQuery={recipe.searchTerm}
+                />
+              )
+            )}
+            <div>
+              <h2 className="text-center font-bold">{recipe.title}</h2>
+              {recipeSaved && <span className="tag tag-green">Saved ✔</span>}
+            </div>
+            {recipe.title !== "Recipe Name" && (
+              <div className="w-full gap-8 flex items-center justify-center my-3">
+                <RecipeCardBubble text={"ingredients"} color="orange">
+                  {recipe.ingredients && recipe.ingredients.length}
+                </RecipeCardBubble>
+                <RecipeCardBubble text={recipe.totalCookTime} color="purple">
+                  <div className="p-1">
+                    <Hourglass />
+                  </div>
+                </RecipeCardBubble>
+                <RecipeCardBubble text={recipe.category} color="blue">
+                  {recipe.category === "breakfast" && <Breakfast />}
+                  {recipe.category === "lunch" && <Lunch />}
+                  {recipe.category === "dinner" && <Dinner />}
+                  {recipe.category === "dessert" && <Dessert />}
+                  {recipe.category === "snack" && <Snack />}
+                  {recipe.category === "beverage" && <Beverage />}
+                  {recipe.category === "other" && <Other />}
+                </RecipeCardBubble>
+              </div>
+            )}
+
             <ul className="mt-4 p-2 bg-black bg-opacity-15 dark:bg-white dark:bg-opacity-10 rounded-lg">
-              <h3 className="font-bold text-lg">Ingredients:</h3>
+              <h3 className="font-bold text-lg">Ingredients</h3>
               {recipe.ingredients.map((ing: any, index: number) => (
                 <li key={index}>
                   {ing.quantity} {ing.unit} {ing.name}
@@ -203,9 +375,10 @@ const RecipeInputForm = () => {
               ))}
             </ul>
             <ol className="flex flex-col gap-6 mt-4 p-4 bg-black bg-opacity-15 dark:bg-white dark:bg-opacity-10 rounded-lg">
+              {!recipe.steps && <h3 className="font-bold text-lg">Steps</h3>}
               {recipe.steps.map((step: any, index: number) => (
                 <li key={index}>
-                  <b>Step{index + 1}</b> <br /> {step.instruction}
+                  <b>Step {index + 1}</b> <br /> {step.instruction}
                 </li>
               ))}
             </ol>
@@ -215,27 +388,31 @@ const RecipeInputForm = () => {
                 <p>{recipe.notes}</p>
               </div>
             )}
-            <Button
-              variant={"green"}
-              type="submit"
-              className={`m-4 ${
-                savingRecipe || (recipeSaved && "cursor-default")
-              }`}
-              onClick={() => {
-                !recipeSaved && setSavingRecipe(true);
-              }}
-            >
-              {savingRecipe ? (
-                <LoaderSpinner />
-              ) : recipeSaved && !savingRecipe ? (
-                "Saved ✔"
-              ) : (
-                <div className="flex items-center gap-1 text-xl">
-                  <SaveIcon />
-                  Save
-                </div>
+            {recipe.title &&
+              recipe.title !== null &&
+              recipe.title !== "Recipe Name" && (
+                <Button
+                  variant={"green"}
+                  type="submit"
+                  className={`m-4 ${
+                    savingRecipe || (recipeSaved && "cursor-default")
+                  }`}
+                  onClick={() => {
+                    !recipeSaved && setSavingRecipe(true);
+                  }}
+                >
+                  {savingRecipe ? (
+                    <LoaderSpinner />
+                  ) : recipeSaved && !savingRecipe ? (
+                    "Saved ✔"
+                  ) : (
+                    <div className="flex items-center gap-1 text-xl">
+                      <SaveIcon />
+                      Save
+                    </div>
+                  )}
+                </Button>
               )}
-            </Button>
           </form>
         </div>
       )}

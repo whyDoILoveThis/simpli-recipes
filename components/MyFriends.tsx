@@ -33,7 +33,9 @@ const MyFriends = ({ userUid }: Props) => {
   }, [friends]);
 
   const handleRemoveFriend = async (friendId: string) => {
+
     if (!userId || !userUid) return;
+    
     const theUsersUid = userUid || userId;
 
     try {

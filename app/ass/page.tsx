@@ -13,10 +13,7 @@ const page = () => {
       {/* <TransitionX /> */}
 
       {/* <ObjectDetection /> */}
-      <div>
-        <h1 className="text-4xl text-center my-4">OCR Text Recognition App</h1>
-        <OcrRecognition />
-      </div>
+      <div>{/* <OcrRecognition /> */}</div>
 
       {/* <ItsDropdown
         theButton={
