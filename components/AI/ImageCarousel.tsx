@@ -27,6 +27,8 @@ const ImageCarousel = ({
         const response = await axios.post("/api/serpapi-img-search", {
           query: theQuery,
         }); // Change query as needed
+        console.log(response);
+
         const imageUrls = response.data.data.images_results.map(
           (item: any) => item.thumbnail
         );

@@ -31,35 +31,49 @@ const AddUserButton = ({ theUser }: Props) => {
     refetchUser();
   };
 
+  const checkTheUserStuffToSeeWhichButtonIconToShow = () =>
+    theUser.userId &&
+    userId &&
+    theUser.userId !== userId &&
+    // Check if friendRequests is an array and find if there's a match
+    !(
+      Array.isArray(theUser.friendRequests) &&
+      theUser.friendRequests.find((req) => req.requesterId === userId)
+    ) &&
+    !(Array.isArray(theUser.friends) && theUser.friends.includes(userId)) &&
+    !(
+      Array.isArray(friendRequests) &&
+      theUser !== null &&
+      friendRequests.find((req) => req.requesterId === theUser?.userId)
+    );
+
+  const amITheUser = () =>
+    theUser && theUser.userId && userId && theUser.userId === userId;
+
   return (
-    <Button
-      onClick={() =>
-        theUser !== null &&
-        theUser?.userId &&
-        handleSendFriendRequest(theUser?.userId)
-      }
-      variant="destructive"
-      className="btn-round"
-    >
-      {theUser.userId &&
-      userId &&
-      theUser.userId === userId &&
-      // Check if friendRequests is an array and find if there's a match
-      !(
-        Array.isArray(theUser.friendRequests) &&
-        theUser.friendRequests.find((req) => req.requesterId === userId)
-      ) &&
-      !(Array.isArray(theUser.friends) && theUser.friends.includes(userId)) &&
-      !(
-        Array.isArray(friendRequests) &&
-        theUser !== null &&
-        friendRequests.find((req) => req.requesterId === theUser?.userId)
-      ) ? (
-        <AddUserIcon />
-      ) : (
-        <DeleteUserIcon />
+    <div>
+      {!amITheUser() && (
+        <Button
+          onClick={() =>
+            theUser !== null &&
+            theUser?.userId &&
+            handleSendFriendRequest(theUser?.userId)
+          }
+          variant={
+            checkTheUserStuffToSeeWhichButtonIconToShow()
+              ? "green"
+              : "destructive"
+          }
+          className="btn-round"
+        >
+          {checkTheUserStuffToSeeWhichButtonIconToShow() ? (
+            <AddUserIcon />
+          ) : (
+            <DeleteUserIcon />
+          )}
+        </Button>
       )}
-    </Button>
+    </div>
   );
 };
 

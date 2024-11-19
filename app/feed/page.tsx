@@ -6,7 +6,7 @@ import "@/styles/loader.css";
 
 const Page = () => {
   return (
-    <div className="mt-4">
+    <div className="w-full mt-4">
       <h2 className="font-bold text-center mb-4">Feed</h2>
       <Tabs
         defaultValue="all-posts"
@@ -21,11 +21,11 @@ const Page = () => {
             For You
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="all-posts">
+        <TabsContent className="w-full" value="all-posts">
           <RecipeCardListWithSearchFiltering />
         </TabsContent>
 
-        <TabsContent value="friends">
+        <TabsContent className="w-full" value="friends">
           <RecipeCardListWithSearchFiltering filterFriends={true} />{" "}
         </TabsContent>
         <TabsContent value="for-you">sdgsdgsdfgsdfgs </TabsContent>

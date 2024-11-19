@@ -3,7 +3,7 @@ import ItsSkeleton from "../ui/ItsSkeleton";
 
 const RecipeCardListSkeleton = () => {
   return (
-    <div className="grid sm:grid-cols-2 place-items-center p-2 gap-4">
+    <div className="w-full grid sm:grid-cols-2 place-items-center p-2 gap-4">
       <ItsSkeleton
         width="100%"
         height="200px"

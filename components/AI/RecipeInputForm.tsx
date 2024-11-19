@@ -225,7 +225,7 @@ const RecipeInputForm = () => {
         {usingOcr && (
           <div className="w-full">
             <OcrRecognition ocrResult={ocrResult} setOcrResult={setOcrResult} />
-            {ocrResult && (
+            {usingOcr && ocrResult !== "" && (
               <AiTextarea
                 prompt={prompt}
                 setPrompt={setPrompt}

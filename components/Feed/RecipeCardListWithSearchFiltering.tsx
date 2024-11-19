@@ -188,9 +188,9 @@ const FriendsPosts = ({
   const totalPages = Math.ceil(totalRecipes / recipesPerPage);
 
   return (
-    <div className="flex flex-col items-center ">
+    <div className="w-full flex flex-col items-center ">
       {/* Search Bar */}
-      <div className="flex flex-col items-center mb-2 gap-2 w-full">
+      <div className="flex flex-col items-center mb-2 px-6 gap-2 w-full">
         <div
           className={`flex items-center w-full gap-2 ${
             showSearch && "justify-center"
@@ -327,7 +327,7 @@ const FriendsPosts = ({
       </div>
 
       {/* Recipe List */}
-      <div>
+      <div className="w-full">
         {currentRecipes.length > 0 ? (
           <RecipeCardList
             recipes={currentRecipes}
@@ -335,9 +335,8 @@ const FriendsPosts = ({
             handleDeleteRecipe={handleDeleteRecipe}
           />
         ) : (
-          <p>pop</p>
+          <RecipeCardListSkeleton />
         )}
-        <RecipeCardListSkeleton />
       </div>
 
       {/* Pagination Component */}

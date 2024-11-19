@@ -1,11 +1,11 @@
 "use client";
 import RecipeCardListWithSearchFiltering from "@/components/Feed/RecipeCardListWithSearchFiltering";
-import AddUserButton from "@/components/icons/AddUserIcon";
 import DocumentIcon from "@/components/icons/DocumentIcon";
 import Friends from "@/components/icons/Friends";
 import Heart from "@/components/icons/Heart";
 import MyFriends from "@/components/MyFriends";
 import ProfilePageSkeleton from "@/components/ProfilePageSkeleton";
+import AddUserButton from "@/components/ui/AddUserButton";
 import { Button } from "@/components/ui/button";
 import DateAndTime from "@/components/ui/DateAndTime";
 import ItsTooltip from "@/components/ui/its-tooltip";
@@ -55,7 +55,7 @@ const Page = ({ params: { uid } }: { params: { uid: string } }) => {
   }
 
   return (
-    <div className="pt-4 px-2">
+    <div className="pt-4 px-2 pb-20">
       {/* User is found, you can display their info here */}
       <div className="w-full flex justify-center mt-2">
         {theUser && theUser.userId && (
@@ -75,52 +75,13 @@ const Page = ({ params: { uid } }: { params: { uid: string } }) => {
                 nameOnlyClassNames={["font-bold"]}
               />
               <div className="addfriendbutton absolute -right-10">
-                {theUser.userId &&
-                  userId &&
-                  // Check if friendRequests is an array and find if there's a match
-                  !(
-                    Array.isArray(theUser.friendRequests) &&
-                    theUser.friendRequests.find(
-                      (req) => req.requesterId === userId
-                    )
-                  ) &&
-                  !(
-                    Array.isArray(theUser.friends) &&
-                    theUser.friends.includes(userId)
-                  ) &&
-                  !(
-                    Array.isArray(friendRequests) &&
-                    theUser !== null &&
-                    friendRequests.find(
-                      (req) => req.requesterId === theUser?.userId
-                    )
-                  ) &&
-                  theUser.userId !== userId && (
-                    <ItsTooltip
-                      tooltipClassName="text-nowrap -translate-x-7"
-                      tooltipText="Add Friend"
-                      delay={800}
-                    >
-                      <Button
-                        onClick={() =>
-                          theUser !== null &&
-                          theUser?.userId &&
-                          handleSendFriendRequest(theUser?.userId)
-                        }
-                        variant="green"
-                        className="btn-round"
-                      >
-                        <AddUserButton />
-                        {theUser.friendRequests ? (
-                          theUser.friendRequests?.map((req, index) => (
-                            <span key={index}>{req.requesterId}</span>
-                          ))
-                        ) : (
-                          <p>ass</p>
-                        )}
-                      </Button>
-                    </ItsTooltip>
-                  )}
+                <ItsTooltip
+                  tooltipClassName="text-nowrap -translate-x-7"
+                  tooltipText="Add Friend"
+                  delay={800}
+                >
+                  <AddUserButton theUser={theUser} />
+                </ItsTooltip>
               </div>
             </div>
             <span className="flex gap-1 text-[11px] text-slate-400">

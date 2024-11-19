@@ -21,6 +21,7 @@ export default function OcrRecognition({ ocrResult, setOcrResult }: Props) {
     const file = e.target.files?.[0];
     if (file) {
       setImage(file);
+      setOcrResult("");
       // Use FileReader to read and display the image
       const reader = new FileReader();
       reader.onload = () => {
@@ -56,14 +57,14 @@ export default function OcrRecognition({ ocrResult, setOcrResult }: Props) {
   };
 
   return (
-    <div className="p-4">
-      <div className="w-full flex flex-col items-center gap-2 p-2 rounded-2xl bg-black bg-opacity-15 dark:bg-white dark:bg-opacity-10">
+    <div className="p-4 flex justify-center">
+      <div className="w-fit flex flex-col items-center gap-2 p-2 rounded-2xl bg-black bg-opacity-15 dark:bg-white dark:bg-opacity-10">
         <span>
           <h2 className="text-2xl text-center font-bold leading-tight">
             Image to text
           </h2>
           {ocrResult !== "" && ocrResult !== "No text found." && (
-            <p className="text-sm">
+            <p className="text-[10px]">
               Don't worry much about misspelled, or missed words
             </p>
           )}
@@ -83,22 +84,36 @@ export default function OcrRecognition({ ocrResult, setOcrResult }: Props) {
             className=" w-full h-full cursor-pointer absolute top-0 opacity-0"
           />
         </div>
-        <span className="flex justify-center gap-1 relative">
+        <span className="flex flex-col justify-center gap-1 pb-12 relative">
           {imageUrl && (
             <Image width={280} height={100} src={imageUrl} alt={imageUrl} />
           )}
-          {imageUrl !== "" && (
+          {imageUrl !== "" && !ocrResult && (
             <button
               disabled={loading}
               style={{ cursor: `${loading ? "default" : "pointer"}` }}
-              className={`btn btn-ghost btn-round text-2xl absolute bottom-0 -right-10`}
+              className={`btn btn-ghost btn-round text-2xl absolute bottom-0 -right-0`}
               onClick={handleUpload}
             >
               {loading ? <LoaderSpinner /> : <Magic />}
             </button>
           )}
+          {ocrResult === "No text found." && (
+            <button
+              disabled={loading}
+              style={{ cursor: `${loading ? "default" : "pointer"}` }}
+              className={`btn btn-ghost btn-round text-2xl absolute bottom-0 -right-0`}
+              onClick={handleUpload}
+            >
+              {loading ? <LoaderSpinner /> : <Magic />}
+            </button>
+          )}
+          {ocrResult && (
+            <p className="text-sm max-w-[28-0px] bg-black bg-opacity-20 text-gray-200 ">
+              {ocrResult}
+            </p>
+          )}
         </span>
-        {ocrResult && <pre>{ocrResult}</pre>}
       </div>
     </div>
   );

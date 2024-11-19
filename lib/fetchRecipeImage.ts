@@ -8,7 +8,7 @@ export default async function fetchRecipeImage(query: string): Promise<string[]>
             params: {
                 query: query,
                 client_id: UNSPLASH_ACCESS_KEY,
-                per_page: 40,  
+                per_page: 20,  
                 orientation: 'landscape'
             }
         });
