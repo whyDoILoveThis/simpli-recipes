@@ -1,10 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "./ui/checkbox";
-import { useDrag, useDrop, DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import Image from "next/image";
 import { fbUploadImage } from "@/firebase/fbUploadImage";
 import Minus from "./icons/Minus";
@@ -33,89 +32,6 @@ interface RecipeFormProps {
   ) => void; // Submit handler
   onCancel?: () => void; // Cancel handler
 }
-
-interface DraggableItemProps {
-  item: string;
-  index: number;
-  moveItem: (fromIndex: number, toIndex: number) => void;
-  deleteItem: (index: number) => void;
-  type: string; // "ingredient" or "step"
-}
-
-const ItemTypes = {
-  INGREDIENT: "ingredient",
-  STEP: "step",
-};
-
-const DraggableItem = ({
-  item,
-  index,
-  moveItem,
-  deleteItem,
-  type,
-}: DraggableItemProps) => {
-  const ref = useRef<HTMLDivElement>(null);
-
-  const [, drop] = useDrop({
-    accept: type,
-    hover(draggedItem: { index: number }) {
-      if (!ref.current) return;
-
-      const dragIndex = draggedItem.index;
-      const hoverIndex = index;
-
-      // Don't replace items with themselves
-      if (dragIndex === hoverIndex) return;
-
-      // Move the item
-      moveItem(dragIndex, hoverIndex);
-
-      // Update the index for the dragged item
-      draggedItem.index = hoverIndex;
-    },
-  });
-
-  const [{ isDragging }, drag] = useDrag({
-    type,
-    item: { index },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  });
-
-  drag(drop(ref));
-
-  return (
-    <div
-      ref={ref}
-      className="flex items-center gap-4 mb-1 border border-slate-700 rounded-3xl w-fit p-2"
-      style={{ opacity: isDragging ? 0.5 : 1 }}
-    >
-      <span className="cursor-move">⋮⋮</span>
-      {type === ItemTypes.INGREDIENT ? (
-        <span>{item}</span>
-      ) : (
-        <span>
-          <strong>Step {index + 1}:</strong> {item}
-        </span>
-      )}
-      <Button
-        className="p-2 w-[30px] h-[30px]"
-        type="button"
-        onClick={() => deleteItem(index)}
-      >
-        <Minus />
-      </Button>
-    </div>
-  );
-};
-
-////////////////////////////////////////
-//////////////////////////////////////////
-///////////////////////////////////////
-/////////////////////////////////////
-//////////////////////////////////////////
-//////////////////////////////////////////
 
 export default function RecipeForm({
   mode,
@@ -181,14 +97,6 @@ export default function RecipeForm({
     setFormData({ ...formData, ingredients: updatedIngredients });
   };
 
-  // Function to move an ingredient
-  const moveIngredient = (fromIndex: number, toIndex: number) => {
-    const updatedIngredients = Array.from(formData.ingredients || []);
-    const [movedItem] = updatedIngredients.splice(fromIndex, 1);
-    updatedIngredients.splice(toIndex, 0, movedItem);
-    setFormData({ ...formData, ingredients: updatedIngredients });
-  };
-
   // Function to add a step
   const addStep = () => {
     if (stepInput.trim() !== "") {
@@ -203,14 +111,6 @@ export default function RecipeForm({
   // Function to delete a step
   const deleteStep = (index: number) => {
     const updatedSteps = formData.steps?.filter((_, i) => i !== index);
-    setFormData({ ...formData, steps: updatedSteps });
-  };
-
-  // Function to move a step
-  const moveStep = (fromIndex: number, toIndex: number) => {
-    const updatedSteps = Array.from(formData.steps || []);
-    const [movedItem] = updatedSteps.splice(fromIndex, 1);
-    updatedSteps.splice(toIndex, 0, movedItem);
     setFormData({ ...formData, steps: updatedSteps });
   };
 
@@ -239,8 +139,30 @@ export default function RecipeForm({
     });
   }, [formData.totalTimeTemp]);
 
+  const onDragEnd = (result: any) => {
+    if (!result.destination) return;
+
+    const { source, destination } = result;
+
+    if (source.droppableId === destination.droppableId) {
+      const items = Array.from(
+        source.droppableId === "ingredients"
+          ? formData.ingredients || []
+          : formData.steps || []
+      );
+      const [reorderedItem] = items.splice(source.index, 1);
+      items.splice(destination.index, 0, reorderedItem);
+
+      if (source.droppableId === "ingredients") {
+        setFormData({ ...formData, ingredients: items });
+      } else {
+        setFormData({ ...formData, steps: items });
+      }
+    }
+  };
+
   return (
-    <DndProvider backend={HTML5Backend}>
+    <DragDropContext onDragEnd={onDragEnd}>
       <article className=" w-full p-4 flex flex-col items-center">
         <div className="w-fit relative overflow-hidden">
           <div className=" blur-2xl">
@@ -312,20 +234,49 @@ export default function RecipeForm({
             {/* Ingredients Section */}
             <div>
               <h4 className="font-semibold mb-1">Ingredients</h4>
-              {formData.ingredients && formData.ingredients.length > 0 && (
-                <div>
-                  {formData.ingredients.map((ingredient, index) => (
-                    <DraggableItem
-                      key={`ingredient-${index}`}
-                      item={ingredient}
-                      index={index}
-                      moveItem={moveIngredient}
-                      deleteItem={deleteIngredient}
-                      type={ItemTypes.INGREDIENT}
-                    />
-                  ))}
-                </div>
-              )}
+              <Droppable droppableId="ingredients" key="ingredients">
+                {(provided, snapshot) => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    className={`mb-4 p-2 rounded-2xl ${
+                      snapshot.isDraggingOver
+                        ? "bg-gray-200 dark:bg-slate-950 dark:bg-opacity-20"
+                        : ""
+                    }`}
+                  >
+                    {formData.ingredients &&
+                      formData.ingredients.length > 0 &&
+                      formData.ingredients.map((ingredient, index) => (
+                        <Draggable
+                          key={`ingredient-${index}`}
+                          draggableId={`ingredient-${index}-${ingredient}`}
+                          index={index}
+                        >
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              className="flex items-center gap-4 mb-1 border border-slate-700 rounded-3xl w-fit p-2"
+                            >
+                              <span className="cursor-move">⋮⋮</span>
+                              <span>{ingredient}</span>
+                              <Button
+                                className="p-2 w-[30px] h-[30px]"
+                                type="button"
+                                onClick={() => deleteIngredient(index)}
+                              >
+                                <Minus />
+                              </Button>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
             </div>
             {/* Add Ingredient Input */}
             <div className="flex justify-center items-center gap-2 mb-4">
@@ -346,20 +297,51 @@ export default function RecipeForm({
             {/* Steps Section */}
             <div>
               <h4 className="font-semibold mb-2">Steps</h4>
-              {formData.steps && formData.steps.length > 0 && (
-                <div>
-                  {formData.steps.map((step, index) => (
-                    <DraggableItem
-                      key={`step-${index}`}
-                      item={step}
-                      index={index}
-                      moveItem={moveStep}
-                      deleteItem={deleteStep}
-                      type={ItemTypes.STEP}
-                    />
-                  ))}
-                </div>
-              )}
+              <Droppable droppableId="steps" type="group" key="steps">
+                {(provided, snapshot) => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    className={`mb-4 p-2 rounded-2xl ${
+                      snapshot.isDraggingOver
+                        ? "bg-gray-200 dark:bg-slate-950 dark:bg-opacity-20"
+                        : ""
+                    }`}
+                  >
+                    {formData.steps &&
+                      formData.steps.length > 0 &&
+                      formData.steps.map((step, index) => (
+                        <Draggable
+                          key={`step-${index}`}
+                          draggableId={`step-${index}`}
+                          index={index}
+                        >
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              className="flex items-center gap-4 mb-1 border border-slate-700 rounded-3xl w-fit p-2"
+                            >
+                              <span className="cursor-move">⋮⋮</span>
+                              <span>
+                                <strong>Step {index + 1}:</strong> {step}
+                              </span>
+                              <Button
+                                className="p-2 w-[30px] h-[30px]"
+                                type="button"
+                                onClick={() => deleteStep(index)}
+                              >
+                                <Minus />
+                              </Button>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
             </div>
             {/* Add Step Textarea */}
             <div className="flex items-center gap-2 mb-4">
@@ -422,6 +404,6 @@ export default function RecipeForm({
           </form>
         </div>
       </article>
-    </DndProvider>
+    </DragDropContext>
   );
 }
