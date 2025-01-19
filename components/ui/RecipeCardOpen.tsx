@@ -230,7 +230,7 @@ const RecipeCardOpen = ({ recipe, showPageLink = true }: Props) => {
           <ol className="flex flex-col gap-4 max-w-[300px]">
             {recipe.steps.map((step, index) => (
               <li key={index}>
-                <b>Step{index + 1}:</b> <br /> {step}
+                <b>Step{index + 1} </b> <br /> {step}
               </li>
             ))}
           </ol>
@@ -238,7 +238,7 @@ const RecipeCardOpen = ({ recipe, showPageLink = true }: Props) => {
       </Tabs>
       {recipe.notes && (
         <div className="flex flex-col gap-1 mt-4">
-          <b>notes:</b>
+          <b>notes</b>
           <p>{recipe.notes}</p>
         </div>
       )}

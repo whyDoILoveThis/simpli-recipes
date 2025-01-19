@@ -68,6 +68,31 @@ body {
   }
 }
 
+
+/*? Typing animation for Puter.js*/
+.blinking-dot {
+  display: inline-block;
+  margin-left: 5px;
+  width: 8px;
+  height: 8px;
+  background-color: black;
+  border-radius: 50%;
+  animation: blink 1s infinite;
+  @apply
+    dark:bg-white
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  50.1%, 100% {
+    opacity: 0;
+  }
+}
+
+
+
 /*& Scroll Bar*/
 body::-webkit-scrollbar-track,
 body *::-webkit-scrollbar-track {

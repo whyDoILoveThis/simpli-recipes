@@ -139,7 +139,6 @@ const Page = ({ params: { uid } }: { params: { uid: string } }) => {
         </TabsContent>
 
         <TabsContent value="friends">
-          {" "}
           <MyFriends userUid={theUser?.userId} />
         </TabsContent>
       </Tabs>

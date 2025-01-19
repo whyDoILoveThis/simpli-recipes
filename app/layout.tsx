@@ -37,6 +37,10 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html className="flex justify-center" lang="en">
+        <head>
+          {/* Include the Puter.js script */}
+          <script src="https://js.puter.com/v2/" defer></script>
+        </head>
         <body className="max-w-[800px] w-[800px] pt-14 flex flex-col">
           <ConfirmProvider>
             <ThemeProvider
@@ -46,7 +50,7 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <SignedOut>
-                <SignInButton />
+                <SignInButton mode="modal" />
               </SignedOut>
               <SignedIn>
                 <Navbar />

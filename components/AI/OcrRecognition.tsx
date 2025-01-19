@@ -58,7 +58,7 @@ export default function OcrRecognition({ ocrResult, setOcrResult }: Props) {
 
   return (
     <div className="p-4 flex justify-center">
-      <div className="w-fit flex flex-col items-center gap-2 p-2 rounded-2xl bg-black bg-opacity-15 dark:bg-white dark:bg-opacity-10">
+      <div className="w-fit min-w-[240px] flex flex-col items-center gap-2 p-2 rounded-2xl bg-black bg-opacity-15 dark:bg-white dark:bg-opacity-10">
         <span>
           <h2 className="text-2xl text-center font-bold leading-tight">
             Image to text
@@ -84,7 +84,11 @@ export default function OcrRecognition({ ocrResult, setOcrResult }: Props) {
             className=" w-full h-full cursor-pointer absolute top-0 opacity-0"
           />
         </div>
-        <span className="flex flex-col justify-center gap-1 pb-12 relative">
+        <span
+          className={`flex flex-col justify-center items-center gap-2 ${
+            imageUrl !== "" && !ocrResult && "pb-12"
+          } relative`}
+        >
           {imageUrl && (
             <Image width={280} height={100} src={imageUrl} alt={imageUrl} />
           )}
@@ -108,11 +112,7 @@ export default function OcrRecognition({ ocrResult, setOcrResult }: Props) {
               {loading ? <LoaderSpinner /> : <Magic />}
             </button>
           )}
-          {ocrResult && (
-            <p className="text-sm max-w-[28-0px] bg-black bg-opacity-20 text-gray-200 ">
-              {ocrResult}
-            </p>
-          )}
+          {ocrResult && <p className="text-sm text-gray-200 ">{ocrResult}</p>}
         </span>
       </div>
     </div>

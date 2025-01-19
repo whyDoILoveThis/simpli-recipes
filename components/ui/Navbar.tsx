@@ -59,18 +59,32 @@ const Navbar = () => {
                 : "flex-row gap-4 items-center"
             }`}
           >
-            <ul className={`flex gap-4 ${isOpen && "flex-col"} `}>
-              <li className="text-slate-200 hover:text-orange-300 font-bold">
-                <Link href={"/"}>Profile</Link>
+            <ul
+              onClick={() => {
+                setIsOpen(false);
+                setTriggerXTransition(!triggerXTransition);
+              }}
+              className={`flex gap-4 ${isOpen && "flex-col"} `}
+            >
+              <li className="text-slate-200  font-bold">
+                <Link className="hover:text-orange-300" href={"/"}>
+                  Profile
+                </Link>
               </li>
-              <li className="text-slate-200 hover:text-orange-300 font-bold">
-                <Link href={"/feed"}>Feed</Link>
+              <li className="text-slate-200 300 font-bold">
+                <Link className="hover:text-orange-300" href={"/feed"}>
+                  Feed
+                </Link>
               </li>
-              <li className="text-slate-200 hover:text-orange-300 font-bold">
-                <Link href={"/create"}>Create</Link>
+              <li className="text-slate-200 300 font-bold">
+                <Link className="hover:text-orange-300" href={"/create"}>
+                  Create
+                </Link>
               </li>
-              <li className="text-slate-200 hover:text-orange-300 font-bold">
-                <Link href={"/ai"}>AI</Link>
+              <li className="text-slate-200 300 font-bold">
+                <Link className="hover:text-orange-300" href={"/ai"}>
+                  AI
+                </Link>
               </li>
             </ul>
             <div className="flex gap-2">

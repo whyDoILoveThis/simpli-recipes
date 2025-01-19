@@ -59,7 +59,12 @@ export async function POST(request: Request) {
     });
 
     const data = await response.json();
+    console.log('OpenAI API response:', data);
     const recipe = data.choices?.[0]?.message?.function_call?.arguments;
+
+    if (!recipe) {
+      throw new Error('Recipe generation failed');
+    }
 
     return NextResponse.json({ recipe: JSON.parse(recipe) });
   } catch (error) {

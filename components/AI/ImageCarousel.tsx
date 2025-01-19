@@ -33,6 +33,7 @@ const ImageCarousel = ({
           (item: any) => item.thumbnail
         );
         setImages(imageUrls);
+        setTheImgUrl(imageUrls[currentIndex]);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching images:", error);
