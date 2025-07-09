@@ -21,17 +21,15 @@ export async function POST(request: Request) {
       }),
     });
 
-   const data = await response.json();
-const recipeJson = data.choices?.[0]?.message?.content;
+    const data = await response.json();
+    console.log('GROQ API response:', data);
+    const recipe = data.choices?.[0]?.message?.function_call?.arguments;
 
-try {
-  const recipe = JSON.parse(recipeJson);
-  return NextResponse.json({ recipe });
-} catch (err) {
-  console.error("❌ Failed to parse JSON:", recipeJson);
-  return NextResponse.json({ error: "Bad AI JSON format ❌" }, { status: 500 });
-}
+    if (!recipe) {
+      throw new Error('Recipe generation failed');
+    }
 
+    return NextResponse.json({ recipe: JSON.parse(recipe) });
   } catch (error) {
     console.error('❌ Error:', error);
     return NextResponse.json({ error: 'Internal Server Error ❌' }, { status: 500 });
