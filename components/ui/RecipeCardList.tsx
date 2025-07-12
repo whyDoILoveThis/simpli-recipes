@@ -20,6 +20,7 @@ import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@clerk/nextjs";
 import Heart from "../icons/Heart";
 import LoaderSpinner from "./LoaderSpinner";
+import ProxyImage from "../ProxyImage";
 
 interface Props {
   recipes: Recipe[];
@@ -97,7 +98,7 @@ const RecipeCardList = ({
             }}
           >
             {recipe.photoUrl && recipe.photoUrl !== "" && (
-              <Image
+              <ProxyImage
                 width={200}
                 height={80}
                 src={recipe.photoUrl}
