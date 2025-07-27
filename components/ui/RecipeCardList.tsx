@@ -38,6 +38,7 @@ const RecipeCardList = ({
   const [viewingRecipe, setViewingRecipe] = useState(false);
   const [loadingFavorite, setLoadingFavorite] = useState(false);
   const [favoriteIndex, setFavoriteIndex] = useState(-999);
+  const [loadedImages, setLoadedImages] = useState<string[] | undefined>([]);
 
   const handleFavorite = async (usersUid: string, recipeId: string) => {
     setLoadingFavorite(true);
@@ -104,6 +105,25 @@ const RecipeCardList = ({
                 src={recipe.photoUrl}
                 alt={recipe.photoUrl}
                 className="w-full"
+                onLoad={() => {
+                  if (
+                    recipe.photoUrl &&
+                    loadedImages &&
+                    !loadedImages.includes(recipe.photoUrl)
+                  ) {
+                    setLoadedImages((prev) => [
+                      ...(prev ?? []).filter(
+                        (img): img is string => typeof img === "string"
+                      ),
+                      recipe.photoUrl as string,
+                    ]);
+                  }
+                }}
+                styleBool={
+                  loadedImages && loadedImages.includes(recipe.photoUrl)
+                    ? true
+                    : false
+                }
               />
             )}
             <h2 className="absolute bottom-0 w-full text-center font-bold text-slate-100 shadow-bottom ">

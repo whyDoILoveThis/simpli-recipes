@@ -29,6 +29,11 @@ import { fbDeleteComment } from "@/firebase/fbDeleteComment";
 import CommentCard from "./Comments/CommentCard";
 import CommentCardSkeleton from "./Comments/CommentCardSkeleton";
 import LoaderSpinner from "./LoaderSpinner";
+import ProxyImage from "../ProxyImage";
+
+//? showPageLink is needed because we use this same component to render the recipe
+//?   on its recipe route. I didnt want to have a link to the recipe page when
+//?   are already on that page. So we do a bool check when rendering the recipe page link button
 
 interface Props {
   recipe: Recipe;
@@ -45,6 +50,7 @@ const RecipeCardOpen = ({ recipe, showPageLink = true }: Props) => {
   const [loadingComment, setLoadingComment] = useState(false);
   const [selectedCommentIndex, setSelectedCommentIndex] = useState(-999);
   const [loadingFavorite, setLoadingFavorite] = useState(false);
+  const [loadedImages, setLoadedImages] = useState<string[] | undefined>([]);
 
   useEffect(() => {
     const g = async () => {
@@ -137,12 +143,31 @@ const RecipeCardOpen = ({ recipe, showPageLink = true }: Props) => {
     <article className="w-full overflow-y-auto flex flex-col items-center">
       {recipe.photoUrl && recipe.photoUrl !== "" && (
         <div className="p-8">
-          <Image
+          <ProxyImage
             className="rounded-2xl"
             width={300}
             height={80}
             src={recipe.photoUrl}
             alt={recipe.photoUrl}
+            onLoad={() => {
+              if (
+                recipe.photoUrl &&
+                loadedImages &&
+                !loadedImages.includes(recipe.photoUrl)
+              ) {
+                setLoadedImages((prev) => [
+                  ...(prev ?? []).filter(
+                    (img): img is string => typeof img === "string"
+                  ),
+                  recipe.photoUrl as string,
+                ]);
+              }
+            }}
+            styleBool={
+              loadedImages && loadedImages.includes(recipe.photoUrl)
+                ? true
+                : false
+            }
           />
         </div>
       )}

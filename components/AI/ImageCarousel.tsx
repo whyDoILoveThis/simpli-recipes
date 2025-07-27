@@ -2,48 +2,50 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import LoaderClassic from "../ui/LoaderClassic";
 import LoaderSpinner from "../ui/LoaderSpinner";
+import { getBingImages } from "@/lib/getBingImages";
+import ProxyImage from "../ProxyImage";
 
 interface Props {
   recipeSaved: boolean;
   theQuery: string;
   theImgUrl: string;
   setTheImgUrl: (url: string) => void;
+  fetchImagesTrigger?: boolean; // Optional prop to trigger re-fetching images
 }
 const ImageCarousel = ({
   recipeSaved,
   theQuery,
   theImgUrl,
   setTheImgUrl,
+  fetchImagesTrigger = false, // Optional prop to trigger re-fetching images
 }: Props) => {
   const [images, setImages] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
+  const [loadedImages, setLoadedImages] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   // Fetch images from the API
+  const fetchImages = async () => {
+    try {
+      const imageUrls = await getBingImages(theQuery);
+
+      setImages(imageUrls);
+      setTheImgUrl(imageUrls[currentIndex]);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching images:", error);
+      setError("Failed to fetch images from the server");
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchImages = async () => {
-      try {
-        const response = await axios.post("/api/serpapi-img-search", {
-          query: theQuery,
-        }); // Change query as needed
-        console.log(response);
-
-        const imageUrls = response.data.data.images_results.map(
-          (item: any) => item.thumbnail
-        );
-        setImages(imageUrls);
-        setTheImgUrl(imageUrls[currentIndex]);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching images:", error);
-        setError("Failed to fetch images from the server");
-        setLoading(false);
-      }
-    };
-
     fetchImages();
   }, []);
+
+  useEffect(() => {
+    fetchImages();
+  }, [fetchImagesTrigger]);
 
   useEffect(() => {
     setTheImgUrl(images[currentIndex]);
@@ -70,8 +72,8 @@ const ImageCarousel = ({
   return (
     <div className="carousel-container">
       <div className="carousel">
-        {!recipeSaved && (
-          <span className="flex gap-2 mb-1">
+        {!recipeSaved && images.length > 0 && (
+          <span className="flex gap-2 mb-1 mt-4">
             <button
               type="button"
               onClick={goToPreviousImage}
@@ -90,7 +92,29 @@ const ImageCarousel = ({
         )}
         {/* Display current image */}
         <div className="carousel-item">
-          <img src={images[currentIndex]} alt={`Image ${currentIndex + 1}`} />
+          {images.length > 0 && (
+            <div className="relative ">
+              {!loadedImages.includes(images[currentIndex]) && (
+                <span className="absolute inset-0 z-[50] flex items-center justify-center">
+                  <LoaderSpinner />
+                </span>
+              )}
+              <ProxyImage
+                src={images[currentIndex]}
+                alt={`Image ${currentIndex + 1}`}
+                width={500}
+                height={500}
+                onLoad={() => {
+                  if (!loadedImages.includes(images[currentIndex])) {
+                    setLoadedImages((prev) => [...prev, images[currentIndex]]);
+                  }
+                }}
+                styleBool={
+                  loadedImages.includes(images[currentIndex]) ? true : false
+                }
+              />
+            </div>
+          )}
         </div>
 
         {/* Navigation Buttons */}

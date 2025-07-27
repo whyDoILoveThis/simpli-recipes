@@ -10,6 +10,8 @@ type ProxyImageProps = {
   height: number;
   className?: string;
   priority?: boolean;
+  onLoad?: () => void;
+  styleBool?: boolean; // Optional prop for conditional styling
 };
 
 const ProxyImage: FC<ProxyImageProps> = ({
@@ -19,17 +21,23 @@ const ProxyImage: FC<ProxyImageProps> = ({
   height,
   className,
   priority = false,
+  onLoad,
+  styleBool = false, // Optional prop for conditional styling
 }) => {
   const proxySrc = `/api/image-proxy?url=${encodeURIComponent(src)}`;
 
   return (
     <Image
+      onLoad={onLoad}
       src={proxySrc}
       alt={alt}
       width={width}
       height={height}
-      className={className}
+      className={`rounded-md ${className}`}
       priority={priority}
+      style={{
+        opacity: styleBool ? "1" : "0.35",
+      }}
     />
   );
 };

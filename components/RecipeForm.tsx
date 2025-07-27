@@ -11,6 +11,9 @@ import Plus from "./icons/Plus";
 import { Slider } from "@/components/ui/slider";
 import { convertTime } from "@/lib/utils";
 import Upload from "./icons/Upload";
+import ImageSearcher from "./ImageSearcher";
+import { fbDeleteImage } from "@/firebase/firebaseDeleteImage";
+import LoaderSpinner from "./ui/LoaderSpinner";
 
 enum RecipeCategory {
   Breakfast = "breakfast",
@@ -46,7 +49,13 @@ export default function RecipeForm({
   const [ingredientInput, setIngredientInput] = useState<string>("");
   const [stepInput, setStepInput] = useState<string>("");
   const [image, setImage] = useState<File | null>(null); // State for file upload
+  const [base64Url, setBase64Url] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [imageSearch, setImageSearch] = useState(false);
+  const [imageSearchTerm, setImageSearchTerm] = useState("");
+  const [currentImgUrlCopy, setCurrentImgUrlCopy] = useState("");
+  const [deletingImage, setDeletingImage] = useState(false);
+  const initialSearchTerm = recipeData.title || "";
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -56,27 +65,12 @@ export default function RecipeForm({
       const reader = new FileReader();
       reader.onload = () => {
         if (typeof reader.result === "string") {
-          setImageUrl(reader.result);
+          setBase64Url(reader.result);
         }
       };
       reader.readAsDataURL(file);
     }
   };
-
-  useEffect(() => {
-    const uploadAndGetUrl = async () => {
-      console.log("ulpading image");
-
-      if (!image) return;
-      const tempImageUrl = await fbUploadImage(image);
-      setFormData({
-        ...formData,
-        photoUrl: tempImageUrl,
-      });
-    };
-
-    uploadAndGetUrl();
-  }, [image, imageUrl]);
 
   // Function to add an ingredient
   const addIngredient = () => {
@@ -119,17 +113,52 @@ export default function RecipeForm({
     setFormData({ ...formData, category });
   };
 
+  const uploadAndGetUrl = async () => {
+    console.log("ulpading image");
+    if (!image) return;
+    if (imageUrl) {
+      setDeletingImage(true);
+      await fbDeleteImage(imageUrl);
+      setDeletingImage(false);
+    }
+
+    const tempImageUrl = await fbUploadImage(image);
+    setImageUrl(tempImageUrl);
+    setBase64Url(tempImageUrl); // Update base64Url with the new image URL
+    setFormData({
+      ...formData,
+      photoUrl: tempImageUrl,
+    });
+  };
+
+  useEffect(() => {
+    uploadAndGetUrl();
+  }, [image]);
+
   // Updated onSubmit to include formData
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (
+      image &&
+      image !== null &&
+      image !== undefined &&
+      base64Url &&
+      base64Url !== null &&
+      base64Url !== undefined &&
+      base64Url !== ""
+    ) {
+      if (recipeData.photoUrl && recipeData.photoUrl !== "") {
+        await fbDeleteImage(recipeData.photoUrl);
+      }
+      await uploadAndGetUrl();
+    }
+
     onSubmit(e, formData);
   };
 
-  console.log(formData);
-
   useEffect(() => {
     setNewRecipeData(formData); // Set form data when recipeData changes
-  }, [formData, setNewRecipeData]);
+  }, [formData]);
 
   useEffect(() => {
     setFormData({
@@ -161,6 +190,18 @@ export default function RecipeForm({
     }
   };
 
+  useEffect(() => {
+    if (currentImgUrlCopy && currentImgUrlCopy !== "") {
+      setFormData({
+        ...formData,
+        photoUrl: currentImgUrlCopy,
+      });
+    }
+  }, [currentImgUrlCopy]);
+
+  const onSearch = () => {};
+
+  console.log(formData);
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <article className=" w-full p-4 flex flex-col items-center">
@@ -180,26 +221,75 @@ export default function RecipeForm({
             <h3 className="text-2xl font-bold mb-4">
               {mode === "add" ? "Add Recipe" : "Edit Recipe"}
             </h3>
-            <div className="input">
-              {imageUrl !== "" && (
-                <Image width={200} height={80} src={imageUrl} alt={imageUrl} />
-              )}
-              <div className=" flex justify-center relative">
-                <span className="text-7xl">
-                  <p className="text-xl font-bold text-center mb-1">Image</p>
-                  <div className="border-dashed border-2 bg-white bg-opacity-5  text-slate-300 rounded-xl p-1 px-6 border-slate-500">
-                    <Upload />
-                  </div>
-                </span>
-                <input
-                  id="image"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className=" w-full h-full cursor-pointer absolute top-0 opacity-0"
-                />
-              </div>
+            <div className="flex flex-col gap-3">
+              <h4 className="font-semibold">Image</h4>
+              <span className="flex justify-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImageSearch(false);
+                    setBase64Url("");
+                    setCurrentImgUrlCopy("");
+                    setImage(null);
+                  }}
+                  className={`btn ${!imageSearch && "btn-selected"}`}
+                >
+                  Upload
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (imageUrl && imageUrl !== "") {
+                      fbDeleteImage(imageUrl);
+                      setImageUrl("");
+                    }
+                    setImageSearch(true);
+                  }}
+                  className={`btn ${imageSearch && "btn-selected"}`}
+                >
+                  Image Search
+                </button>
+              </span>
             </div>
+            {deletingImage ? (
+              <div>
+                <LoaderSpinner />
+              </div>
+            ) : (
+              <>
+                {imageSearch ? (
+                  <ImageSearcher
+                    initialSearchTerm={recipeData.title}
+                    setCurrentImgUrlCopy={setCurrentImgUrlCopy}
+                  />
+                ) : (
+                  <div className="input">
+                    {base64Url !== "" && (
+                      <Image
+                        width={200}
+                        height={80}
+                        src={base64Url}
+                        alt={base64Url}
+                      />
+                    )}
+                    <div className=" flex justify-center relative">
+                      <span className="text-7xl">
+                        <div className="border-dashed border-2 bg-white bg-opacity-5  text-slate-300 rounded-xl p-1 px-6 border-slate-500">
+                          <Upload />
+                        </div>
+                      </span>
+                      <input
+                        id="image"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className=" w-full h-full cursor-pointer absolute top-0 opacity-0"
+                      />
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
             {/* Recipe Title */}
             <div>
               <h4 className="font-semibold mb-2">Title</h4>
@@ -361,13 +451,15 @@ export default function RecipeForm({
             {/* Time Slider */}
             <div className="flex flex-col gap-1">
               <label htmlFor="timeSlider">
-                Total Time:{" "}
-                {recipeData.totalTimeTemp &&
-                  convertTime(recipeData.totalTimeTemp)}
+                <h4 className="font-semibold mb-2">
+                  Total Time:{" "}
+                  {recipeData.totalTimeTemp &&
+                    convertTime(recipeData.totalTimeTemp)}
+                </h4>
               </label>
               <Slider
                 id="timeSlider"
-                min={5}
+                min={1}
                 max={500}
                 step={1}
                 defaultValue={
@@ -382,17 +474,20 @@ export default function RecipeForm({
               />
             </div>
             {/* Notes Section */}
-            <Textarea
-              className="mb-4"
-              placeholder="Notes (optional)"
-              value={formData.notes || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, notes: e.target.value })
-              }
-            />
+            <div>
+              <h4 className="font-semibold mb-2">Notes</h4>
+              <Textarea
+                className="mb-4"
+                placeholder="Notes (optional)"
+                value={formData.notes || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, notes: e.target.value })
+                }
+              />
+            </div>
             {/* Buttons */}
             <div className="flex gap-4">
-              <Button type="submit">
+              <Button type="submit" variant="green">
                 {mode === "add" ? "Add Recipe" : "Update Recipe"}
               </Button>
               {onCancel && (

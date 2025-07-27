@@ -4,12 +4,19 @@ import Search from "./icons/Search";
 import AllUsers from "./AllUsers";
 import MyRequests from "./MyRequests";
 import MyFriends from "./MyFriends";
+import Image from "next/image";
 
 const Community = () => {
   return (
     <div>
       {" "}
       <h2 className="text-center font-bold mb-6 mt-8">Community</h2>
+      <Image
+        width={200}
+        height={200}
+        alt="hotlink test"
+        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQEXAMPLE"
+      />
       <Tabs
         defaultValue="all-users"
         className="flex w-full flex-col items-center"
