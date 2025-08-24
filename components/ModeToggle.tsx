@@ -12,17 +12,17 @@ export function ModeToggle() {
   const isDark = theme === "dark";
 
   return (
-    <Button
-      className="rounded-full bg-transparent border hover:bg-black dark:hover:bg-white dark:text-white text-slate-950 dark:hover:bg-opacity-10 hover:bg-opacity-10 w-[30px] h-[30px] p-0"
+    <button
+      className={`btn btn-round !border-none`}
       onClick={() => setTheme(isDark ? "light" : "dark")}
     >
       {theme === "dark" ? (
         <IoFlashlight className="text-xl" />
       ) : theme === "light" ? (
-        <GiNightSky className="text-2xl" />
+        <GiNightSky className="text-[28px] text-slate-800" />
       ) : (
         !theme && <IoFlashlight className="text-xl" />
       )}
-    </Button>
+    </button>
   );
 }

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import "@/styles/Clerk.css";
+import "@/styles/ItsBtn.css";
+import "@/styles/ItsLoaderSpinSmall.css";
 import {
   ClerkProvider,
   SignedIn,

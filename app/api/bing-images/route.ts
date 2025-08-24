@@ -11,10 +11,10 @@ export async function POST(req: NextRequest) {
       return new Response(JSON.stringify({ error: "Invalid term" }), { status: 400 });
     }
 
-    const encodedTerm = encodeURIComponent(term.trim().toLowerCase());
+    const encodedTerm = encodeURIComponent(term.trim().toLowerCase().replace(/\s+/g, ""));
     console.log("Encoded Term:", encodedTerm);
 
-    const searchUrl = `https://www.bing.com/images/async?${encodedTerm}`;
+    const searchUrl = `https://www.bing.com/images/search?q=${encodedTerm}`;
     console.log("Search URL:", searchUrl);
     
     const html = await fetch(searchUrl).then(res => res.text());

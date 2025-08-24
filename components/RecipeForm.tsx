@@ -14,6 +14,7 @@ import Upload from "./icons/Upload";
 import ImageSearcher from "./ImageSearcher";
 import { fbDeleteImage } from "@/firebase/firebaseDeleteImage";
 import LoaderSpinner from "./ui/LoaderSpinner";
+import FloatingOrbs from "./ui/FloatingOrbs";
 
 enum RecipeCategory {
   Breakfast = "breakfast",
@@ -205,14 +206,11 @@ export default function RecipeForm({
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <article className=" w-full p-4 flex flex-col items-center">
-        <div className="w-fit relative overflow-hidden">
-          <div className=" blur-2xl">
-            <span className="w-12 h-12 rounded-full bg-purple-500 text-purple-300 border border-purple-500 absolute top-10 right-12"></span>
-            <span className="w-12 h-12 rounded-full bg-teal-500 absolute top-60 left-40"></span>
-            <span className="w-12 h-12 rounded-full bg-blue-500 absolute top-52 -right-3"></span>
-            <span className="w-12 h-12 rounded-full bg-orange-500 absolute top-96 right-20"></span>
-            <span className="w-12 h-12 rounded-full bg-pink-500 absolute top-[600px] right-10"></span>
-          </div>
+        <div className="w-fit relative rounded-3xl overflow-hidden">
+          <FloatingOrbs
+            className="blur-3xl rounded-3xl overflow-hidden absolute inset-0 -z-10"
+            count={7}
+          />
 
           <form
             onSubmit={handleSubmit}

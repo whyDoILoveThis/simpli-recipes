@@ -117,6 +117,31 @@ body *::-webkit-scrollbar-thumb {
   background-color: #757575;
 }
 
+
+/* Floating across container */
+@keyframes floatX {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(80px, -30px); }
+  50%  { transform: translate(-60px, 40px); }
+  75%  { transform: translate(50px, -20px); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes floatY {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(-30px, 70px); }
+  50%  { transform: translate(20px, -50px); }
+  75%  { transform: translate(-50px, 30px); }
+  100% { transform: translate(0, 0); }
+}
+
+.float {
+  animation: floatX 12s ease-in-out infinite alternate,
+             floatY 10s ease-in-out infinite alternate;
+}
+
+
+
 .zz-top {
   z-index: 9999;
 }
@@ -404,20 +429,5 @@ h2 {
   animation: pop 0.4s ease-in-out, shake 0.6s ease-in-out 0.4s;
 }
 
-/* HTML: <div class="loader"></div> */
-.loader-spinner {
-  width: 15px;
-  height: 15px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(farthest-side, #b7b7b7 94%, #0000) top/2px 2px
-      no-repeat,
-    conic-gradient(#0000 30%, #adadad);
-  -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 2px), #000 0);
-  animation: l13 1s infinite linear;
-}
-@keyframes l13 {
-  100% {
-    transform: rotate(1turn);
-  }
-}
+
+

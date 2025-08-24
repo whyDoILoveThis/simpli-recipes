@@ -49,7 +49,12 @@ const ImageSearcher = ({ setCurrentImgUrlCopy, initialSearchTerm }: Props) => {
   };
 
   const onSearch = () => {
-    if (usingUnsplash) handleUnsplashSearch();
+    if (usingUnsplash) {
+      handleUnsplashSearch();
+    } else {
+      TriggerBingImagesFetch();
+    }
+    setImgSearchIndex(0);
   };
 
   useEffect(() => {

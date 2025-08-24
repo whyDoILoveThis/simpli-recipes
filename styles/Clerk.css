@@ -12,7 +12,7 @@
 
 
 
-.cl-userButtonPopoverMain.🔒️.cl-internal-muj3sv {
+.cl-userButtonPopoverMain.🔒️.cl-internal-8vb5lt {
     backdrop-filter: blur(10px);
     @apply 
     bg-transparent
@@ -90,7 +90,7 @@
 }
 
 
-.cl-navbarMobileMenuRow.🔒️.cl-internal-1cftg7i,.cl-navbarMobileMenuButton.cl-button.🔒️.cl-internal-tn25c7, .cl-navbar.🔒️.cl-internal-13lvar6{
+.cl-navbarMobileMenuRow.🔒️.cl-internal-1x28sfr{
   background: transparent;
   backdrop-filter: blur(8px);
     @apply
@@ -104,10 +104,14 @@
 }
 
 
-.cl-internal-pp7u0o,.cl-navbarButton.cl-button.cl-navbarButton__account.cl-button__account.cl-active.🔒️.cl-internal-q7chm5 {
+.cl-internal-pp7u0o,.cl-navbar.🔒️.cl-internal-lt7rwl{
     @apply
     text-slate-700
     dark:text-white
+     bg-slate-400
+    bg-opacity-95
+    dark:bg-black
+    dark:bg-opacity-95
 }
 
 .cl-scrollBox{
@@ -118,6 +122,11 @@
     mt-2
     rounded-t-none
     dark:text-white
+}
+
+.cl-cardBox.🔒️.cl-internal-mkizyn {
+    @apply
+    backdrop-blur-md
 }
 
 .cl-scrollBox * {

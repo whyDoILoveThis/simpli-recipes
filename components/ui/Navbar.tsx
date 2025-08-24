@@ -12,6 +12,12 @@ const Navbar = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const dropBtnRef = useRef<HTMLDivElement>(null);
   const [triggerXTransition, setTriggerXTransition] = useState(false);
+  const navLinks = [
+    { name: "Profile", href: "/" },
+    { name: "Feed", href: "/feed" },
+    { name: "Create", href: "/create" },
+    { name: "AI", href: "/ai" },
+  ];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -42,8 +48,9 @@ const Navbar = () => {
           href={"/feed"}
         >
           <Image width={40} height={10} src={logo} alt={"logo"} />
-          <p className="text-md translate-y-1 text-blue-100 leading-none">
-            Simpli<span className="text-orange-300">Recipes</span>
+          <p className="text-md translate-y-1 text-teal-500 dark:text-blue-100 leading-none">
+            Simpli
+            <span className="text-amber-500 dark:text-orange-300">Recipes</span>
           </p>
         </Link>
         <div
@@ -59,6 +66,7 @@ const Navbar = () => {
                 : "flex-row gap-4 items-center"
             }`}
           >
+            {/* Map navLinks for navigation */}
             <ul
               onClick={() => {
                 setIsOpen(false);
@@ -66,26 +74,16 @@ const Navbar = () => {
               }}
               className={`flex gap-4 ${isOpen && "flex-col"} `}
             >
-              <li className="text-slate-200  font-bold">
-                <Link className="hover:text-orange-300" href={"/"}>
-                  Profile
-                </Link>
-              </li>
-              <li className="text-slate-200 300 font-bold">
-                <Link className="hover:text-orange-300" href={"/feed"}>
-                  Feed
-                </Link>
-              </li>
-              <li className="text-slate-200 300 font-bold">
-                <Link className="hover:text-orange-300" href={"/create"}>
-                  Create
-                </Link>
-              </li>
-              <li className="text-slate-200 300 font-bold">
-                <Link className="hover:text-orange-300" href={"/ai"}>
-                  AI
-                </Link>
-              </li>
+              {navLinks.map((link) => (
+                <li
+                  key={link.name}
+                  className="dark:text-slate-200 text-slate-700 font-bold"
+                >
+                  <Link className="hover:text-orange-300" href={link.href}>
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
             <div className="flex gap-2">
               <UserButton />

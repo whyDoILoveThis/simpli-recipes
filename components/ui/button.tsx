@@ -17,7 +17,7 @@ const buttonVariants = cva(
 
         green:
           "dark:bg-green-600 dark:bg-opacity-40 dark:text-green-300 dark:hover:bg-opacity-20 bg-green-700  rounded-full text-green-700 border border-green-500 bg-opacity-10 shadow hover:bg-opacity-25",
-        pink: "dark:bg-pink-600 dark:bg-opacity-40 dark:text-pink-300 dark:hover:bg-opacity-20 bg-pink-700  rounded-full text-green-700 border border-pink-500 bg-opacity-10 shadow hover:bg-opacity-25",
+        pink: "dark:bg-pink-500 dark:bg-opacity-80 dark:text-pink-300 dark:hover:bg-opacity-60 bg-pink-700  rounded-full text-green-700 border border-pink-500 bg-opacity-10 shadow hover:bg-opacity-25",
 
         small:
           "p-0 px-1 h-[25px] dark:bg-white dark:bg-opacity-10 dark:hover:bg-opacity-20 bg-black bg-opacity-15 rounded-full text-slate-900 dark:text-white border border-slate-700 bg-opacity-10 shadow hover:bg-opacity-25",

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^5.7.2",
+    "@clerk/themes": "^2.4.13",
     "@hello-pangea/dnd": "^17.0.0",
     "@huggingface/transformers": "^3.0.2",
     "@radix-ui/react-checkbox": "^1.1.2",
